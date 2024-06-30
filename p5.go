@@ -1,4 +1,4 @@
-package p5
+package p5go
 
 import (
 	"math"
