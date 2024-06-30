@@ -1,0 +1,36 @@
+<html>
+
+<head>
+    <title>p5go example</title>
+</head>
+
+<body>
+<main></main>
+
+<button id="run">Run</button>
+
+<script src="https://cdn.jsdelivr.net/npm/p5@1.5.0/lib/p5.js"></script>
+<script src="wasm_exec.js"></script>
+
+<script type="text/javascript">
+    (async () => {
+        const button = document.getElementById('run');
+        button.disabled = true;
+
+        // Initialize
+        const go = new Go();
+        console.log(go.importObject);
+        const result = await WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject);
+        button.disabled = false;
+
+        // Run
+        button.onclick = async () => {
+            button.disabled = true;
+            await go.run(result.instance);
+            button.disabled = false;
+        };
+    })();
+</script>
+</body>
+
+</html>
