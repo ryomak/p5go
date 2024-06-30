@@ -249,6 +249,30 @@ func Color(args ...interface{}) js.Value {
 	return p5Instance.Call("color", args...)
 }
 
+func Push() {
+	p5Instance.Call("push")
+}
+
+func Pop() {
+	p5Instance.Call("pop")
+}
+
+func Translate(x, y float64) {
+	p5Instance.Call("translate", x, y)
+}
+
+func Rotate(angle float64) {
+	p5Instance.Call("rotate", angle)
+}
+
+func TextSize(size float64) {
+	p5Instance.Call("textSize", size)
+}
+
+func Text(str string, x, y float64) {
+	p5Instance.Call("text", str, x, y)
+}
+
 // Vector represents a p5.Vector
 type Vector struct {
 	v js.Value
