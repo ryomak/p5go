@@ -139,13 +139,13 @@ func Init(query string) {
 
 func setupSketch() {
 	if jsPreload := global.Get("preload"); jsPreload.Type() != js.TypeUndefined {
-		p5Instance.Set("preload", js.FuncOf(preload))
+		p5Instance.Set("preload", preload)
 	}
 	if jsSetup := global.Get("setup"); jsSetup.Type() != js.TypeUndefined {
-		p5Instance.Set("setup", js.FuncOf(setup))
+		p5Instance.Set("setup", setup)
 	}
 	if jsDraw := global.Get("draw"); jsDraw.Type() != js.TypeUndefined {
-		p5Instance.Set("draw", js.FuncOf(draw))
+		p5Instance.Set("draw", draw)
 	}
 	// Event handlers
 	setupEventHandler("mouseMoved")
@@ -163,7 +163,28 @@ func setupSketch() {
 func setupEventHandler(name string) {
 	if jsHandler := global.Get(name); jsHandler.Type() != js.TypeUndefined {
 		p5Instance.Set(name, js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-			global.Call(name, args[0])
+			switch name {
+			case "mouseMoved":
+				mouseMoved.Invoke(args[0])
+			case "mouseDragged":
+				mouseDragged.Invoke(args[0])
+			case "mousePressed":
+				mousePressed.Invoke(args[0])
+			case "mouseReleased":
+				mouseReleased.Invoke(args[0])
+			case "mouseClicked":
+				mouseClicked.Invoke(args[0])
+			case "doubleClicked":
+				doubleClicked.Invoke(args[0])
+			case "mouseWheel":
+				mouseWheel.Invoke(args[0])
+			case "keyPressed":
+				keyPressed.Invoke(args[0])
+			case "keyReleased":
+				keyReleased.Invoke(args[0])
+			case "keyTyped":
+				keyTyped.Invoke(args[0])
+			}
 			return nil
 		}))
 	}
@@ -444,4 +465,4 @@ func SetKeyTyped(f func(event js.Value)) {
 //
 // 	// Prevent the program from exiting
 // 	select {}
-// }
+//
