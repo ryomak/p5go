@@ -138,13 +138,13 @@ func Init(query string) {
 }
 
 func setupSketch() {
-	if _, ok := global.Get("preload").Type().String(); ok {
+	if jsPreload := global.Get("preload"); jsPreload.Type() != js.TypeUndefined {
 		p5Instance.Set("preload", js.FuncOf(preload))
 	}
-	if _, ok := global.Get("setup").Type().String(); ok {
+	if jsSetup := global.Get("setup"); jsSetup.Type() != js.TypeUndefined {
 		p5Instance.Set("setup", js.FuncOf(setup))
 	}
-	if _, ok := global.Get("draw").Type().String(); ok {
+	if jsDraw := global.Get("draw"); jsDraw.Type() != js.TypeUndefined {
 		p5Instance.Set("draw", js.FuncOf(draw))
 	}
 	// Event handlers
@@ -161,7 +161,7 @@ func setupSketch() {
 }
 
 func setupEventHandler(name string) {
-	if _, ok := global.Get(name).Type().String(); ok {
+	if jsHandler := global.Get(name); jsHandler.Type() != js.TypeUndefined {
 		p5Instance.Set(name, js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 			global.Call(name, args[0])
 			return nil
