@@ -2,6 +2,8 @@
 package p5go
 
 import (
+	"errors"
+	"fmt"
 	"math"
 	"syscall/js"
 )
@@ -114,110 +116,309 @@ const (
 )
 
 var (
-	p5Instance js.Value
-	global     = js.Global()
+	global = js.Global()
 )
 
-// Init initializes the p5 instance
-func Init(query string) {
-	document := global.Get("document")
-	container := document.Call("querySelector", query)
+// Execute initializes the p5 p5Instance
+func Execute(query string, opts ...Option) error {
+	// Get container
+	container := global.Get("document").Call("querySelector", query)
+	if container.IsNull() {
+		return errors.New(fmt.Sprintf("%s is not match", query))
+	}
 	container.Set("innerHTML", "")
 
-	p5Constructor := global.Get("p5")
-	sketch := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		p5Instance = args[0]
-		setupSketch()
+	p5 := &P5Instance{
+		p5Instance:   js.Undefined(),
+		funcHandlers: map[string]js.Func{},
+	}
+
+	sketch := js.FuncOf(func(this js.Value, args []js.Value) any {
+		p5.p5Instance = args[0]
+		for _, opt := range opts {
+			opt(p5)
+		}
+		for method, handler := range p5.funcHandlers {
+			p5.p5Instance.Set(method, handler)
+		}
 		return nil
 	})
 
+	if err := p5.Validate(); err != nil {
+		return err
+	}
+
+	p5Constructor := global.Get("p5")
 	p5Constructor.New(sketch, container)
+
+	return nil
 }
 
-func setupSketch() {
-	if jsPreload := global.Get("preload"); jsPreload.Type() != js.TypeUndefined {
-		p5Instance.Set("preload", preload)
-	}
-	if jsSetup := global.Get("setup"); jsSetup.Type() != js.TypeUndefined {
-		p5Instance.Set("setup", setup)
-	}
-	if jsDraw := global.Get("draw"); jsDraw.Type() != js.TypeUndefined {
-		p5Instance.Set("draw", draw)
-	}
-	// Event handlers
-	setupEventHandler("mouseMoved")
-	setupEventHandler("mouseDragged")
-	setupEventHandler("mousePressed")
-	setupEventHandler("mouseReleased")
-	setupEventHandler("mouseClicked")
-	setupEventHandler("doubleClicked")
-	setupEventHandler("mouseWheel")
-	setupEventHandler("keyPressed")
-	setupEventHandler("keyReleased")
-	setupEventHandler("keyTyped")
-}
+type Option func(p *P5Instance)
 
-func setupEventHandler(name string) {
-	if jsHandler := global.Get(name); jsHandler.Type() != js.TypeUndefined {
-		p5Instance.Set(name, js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-			if handler, ok := eventHandlers[name]; ok {
-				handler(args[0])
-			}
+func WithPreload(handler func(p *P5Instance)) Option {
+	return func(p *P5Instance) {
+		p.funcHandlers["preload"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(p)
 			return nil
-		}))
+		})
 	}
 }
 
-// p5.js wrappers
-func CreateCanvas(w, h int) {
-	p5Instance.Call("createCanvas", w, h)
+func WithSetup(handler func(p *P5Instance)) Option {
+	return func(p *P5Instance) {
+		p.funcHandlers["setup"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(p)
+			return nil
+		})
+	}
 }
 
-func Background(args ...interface{}) {
-	p5Instance.Call("background", args...)
+func WithDraw(handler func(p *P5Instance)) Option {
+	return func(p *P5Instance) {
+		p.funcHandlers["draw"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(p)
+			return nil
+		})
+	}
 }
 
-func Fill(args ...interface{}) {
-	p5Instance.Call("fill", args...)
+func WithMouseMoved(handler func(p *P5Instance)) Option {
+	return func(p *P5Instance) {
+		p.funcHandlers["mouseMoved"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(p)
+			return nil
+		})
+	}
 }
 
-func NoFill() {
-	p5Instance.Call("noFill")
+func WithMouseDragged(handler func(p *P5Instance)) Option {
+	return func(p *P5Instance) {
+		p.funcHandlers["mouseDragged"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(p)
+			return nil
+		})
+	}
 }
 
-func NoStroke() {
-	p5Instance.Call("noStroke")
+func WithMousePressed(handler func(p *P5Instance)) Option {
+	return func(p *P5Instance) {
+		p.funcHandlers["mousePressed"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(p)
+			return nil
+		})
+	}
 }
 
-func Ellipse(x, y, w, h float64) {
-	p5Instance.Call("ellipse", x, y, w, h)
+func WithMouseReleased(handler func(p *P5Instance)) Option {
+	return func(p *P5Instance) {
+		p.funcHandlers["mouseReleased"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(p)
+			return nil
+		})
+	}
 }
 
-func Rect(x, y, w, h float64) {
-	p5Instance.Call("rect", x, y, w, h)
+func WithMouseClicked(handler func(p *P5Instance)) Option {
+	return func(p *P5Instance) {
+		p.funcHandlers["mouseClicked"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(p)
+			return nil
+		})
+	}
 }
 
-// Event handlers to be implemented in user code
-var eventHandlers = make(map[string]func(js.Value))
+func WithDoubleClicked(handler func(p *P5Instance)) Option {
+	return func(p *P5Instance) {
+		p.funcHandlers["doubleClicked"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(p)
+			return nil
+		})
+	}
+}
 
-func SetEventHandler(eventName string, handler func(event js.Value)) {
-	eventHandlers[eventName] = handler
+func WithMouseWheel(handler func(p *P5Instance)) Option {
+	return func(p *P5Instance) {
+		p.funcHandlers["mouseWheel"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(p)
+			return nil
+		})
+	}
+}
+
+func WithKeyPressed(handler func(p *P5Instance)) Option {
+	return func(p *P5Instance) {
+		p.funcHandlers["keyPressed"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(p)
+			return nil
+		})
+	}
+}
+
+func WithKeyReleased(handler func(p *P5Instance)) Option {
+	return func(p *P5Instance) {
+		p.funcHandlers["keyReleased"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(p)
+			return nil
+		})
+	}
+}
+
+func WithKeyTyped(handler func(p *P5Instance)) Option {
+	return func(p *P5Instance) {
+		p.funcHandlers["keyTyped"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(p)
+			return nil
+		})
+	}
+}
+
+type P5Instance struct {
+	p5Instance   js.Value
+	funcHandlers map[string]js.Func
+}
+
+func (p *P5Instance) Validate() error {
+	if p.p5Instance.Type() == js.TypeUndefined {
+		return errors.New("p5.js is not loaded")
+	}
+	if p.funcHandlers["setup"].IsUndefined() {
+		return errors.New("setup function is not defined")
+	}
+	if p.funcHandlers["draw"].IsUndefined() {
+		return errors.New("draw function is not defined")
+	}
+	return nil
+}
+
+func (p *P5Instance) CreateCanvas(w, h int) {
+	p.p5Instance.Call("createCanvas", w, h)
+}
+
+func (p *P5Instance) Background(args ...interface{}) {
+	p.p5Instance.Call("background", args...)
+}
+
+func (p *P5Instance) Fill(args ...interface{}) {
+	p.p5Instance.Call("fill", args...)
+}
+
+func (p *P5Instance) Stroke(args ...interface{}) {
+	p.p5Instance.Call("stroke", args...)
+}
+
+func (p *P5Instance) NoFill() {
+	p.p5Instance.Call("noFill")
+}
+
+func (p *P5Instance) NoStroke() {
+	p.p5Instance.Call("noStroke")
+}
+
+func (p *P5Instance) Ellipse(x, y, w, h float64) {
+	p.p5Instance.Call("ellipse", x, y, w, h)
+}
+
+func (p *P5Instance) Rect(x, y, w, h float64) {
+	p.p5Instance.Call("rect", x, y, w, h)
+}
+
+func (p *P5Instance) Line(x1, y1, x2, y2 float64) {
+	p.p5Instance.Call("line", x1, y1, x2, y2)
+}
+
+func (p *P5Instance) Triangle(x1, y1, x2, y2, x3, y3 float64) {
+	p.p5Instance.Call("triangle", x1, y1, x2, y2, x3, y3)
+}
+
+func (p *P5Instance) Point(x, y float64) {
+	p.p5Instance.Call("point", x, y)
+}
+
+func (p *P5Instance) Arc(x, y, w, h, start, stop float64) {
+	p.p5Instance.Call("arc", x, y, w, h, start, stop)
+}
+
+func (p *P5Instance) Bezier(x1, y1, x2, y2, x3, y3, x4, y4 float64) {
+	p.p5Instance.Call("bezier", x1, y1, x2, y2, x3, y3, x4, y4)
+}
+
+func (p *P5Instance) QuadraticVertex(cx, cy, x, y float64) {
+	p.p5Instance.Call("quadraticVertex", cx, cy, x, y)
+}
+
+func (p *P5Instance) Curve(x1, y1, x2, y2, x3, y3, x4, y4 float64) {
+	p.p5Instance.Call("curve", x1, y1, x2, y2, x3, y3, x4, y4)
+}
+
+func (p *P5Instance) Text(str string, x, y float64) {
+	p.p5Instance.Call("text", str, x, y)
+}
+
+func (p *P5Instance) TextSize(size float64) {
+	p.p5Instance.Call("textSize", size)
+}
+
+func (p *P5Instance) Push() {
+	p.p5Instance.Call("push")
+}
+
+func (p *P5Instance) Pop() {
+	p.p5Instance.Call("pop")
+}
+
+func (p *P5Instance) Translate(x, y float64) {
+	p.p5Instance.Call("translate", x, y)
+}
+
+func (p *P5Instance) Rotate(angle float64) {
+	p.p5Instance.Call("rotate", angle)
+}
+
+func (p *P5Instance) Scale(s float64) {
+	p.p5Instance.Call("scale", s)
+}
+
+func (p *P5Instance) SaveCanvas(filename, extension string) {
+	p.p5Instance.Call("saveCanvas", filename, extension)
+}
+
+func (p *P5Instance) LoadImage(path string) js.Value {
+	return p.p5Instance.Call("loadImage", path)
+}
+
+func (p *P5Instance) Image(img js.Value, x, y, w, h float64) {
+	p.p5Instance.Call("image", img, x, y, w, h)
+}
+
+func (p *P5Instance) FrameRate(fps float64) {
+	p.p5Instance.Call("frameRate", fps)
+}
+
+func (p *P5Instance) Random(min, max float64) float64 {
+	return p.p5Instance.Call("random", min, max).Float()
+}
+
+func (p *P5Instance) Map(value, start1, stop1, start2, stop2 float64) float64 {
+	return p.p5Instance.Call("map", value, start1, stop1, start2, stop2).Float()
 }
 
 // Example usage:
 //
 // func main() {
-// 	p5go.SetEventHandler("setup", func(event js.Value) {
-// 		p5go.CreateCanvas(400, 400)
-// 	})
-//
-// 	p5go.SetEventHandler("draw", func(event js.Value) {
-// 		p5go.Background(220)
-// 		p5go.Fill(255, 0, 0)
-// 		p5go.Ellipse(200, 200, 50, 50)
-// 	})
-//
-// 	p5go.Init("main")
+// 	p5go.Execute("#container",
+// 		p5go.WithPreload(func(p *p5go.P5Instance) {
+// 			// Preload assets
+// 		}),
+// 		p5go.WithSetup(func(p *p5go.P5Instance) {
+// 			p.CreateCanvas(400, 400)
+// 			p.Background(255)
+// 		}),
+// 		p5go.WithDraw(func(p *p5go.P5Instance) {
+// 			p.Fill(0)
+// 			p.Ellipse(200, 200, 50, 50)
+// 		}),
+// 	)
 //
 // 	// Prevent the program from exiting
 // 	select {}
