@@ -428,6 +428,22 @@ func (p *P5Instance) CurveVertex(x, y float64) {
 	p.p5Instance.Call("curveVertex", x, y)
 }
 
+func (p *P5Instance) BeginContour() {
+	p.p5Instance.Call("beginContour")
+}
+
+func (p *P5Instance) EndContour() {
+	p.p5Instance.Call("endContour")
+}
+
+func (p *P5Instance) Close() {
+	p.p5Instance.Call("close")
+}
+
+func (p *P5Instance) TextAlign(align string) {
+	p.p5Instance.Call("textAlign", align)
+}
+
 // Example usage:
 //
 // func main() {
