@@ -404,6 +404,30 @@ func (p *P5Instance) Map(value, start1, stop1, start2, stop2 float64) float64 {
 	return p.p5Instance.Call("map", value, start1, stop1, start2, stop2).Float()
 }
 
+func (p *P5Instance) BeginShape() {
+	p.p5Instance.Call("beginShape")
+}
+
+func (p *P5Instance) Vertex(x, y float64) {
+	p.p5Instance.Call("vertex", x, y)
+}
+
+func (p *P5Instance) EndShape(mode ...string) {
+	if len(mode) > 0 {
+		p.p5Instance.Call("endShape", mode[0])
+	} else {
+		p.p5Instance.Call("endShape")
+	}
+}
+
+func (p *P5Instance) BezierVertex(cx1, cy1, cx2, cy2, x, y float64) {
+	p.p5Instance.Call("bezierVertex", cx1, cy1, cx2, cy2, x, y)
+}
+
+func (p *P5Instance) CurveVertex(x, y float64) {
+	p.p5Instance.Call("curveVertex", x, y)
+}
+
 // Example usage:
 //
 // func main() {
