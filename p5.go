@@ -1,3 +1,4 @@
+// Package p5go provides a bridge between Go and p5.js, allowing you to create interactive visuals in Go
 package p5go
 
 import (
@@ -114,12 +115,8 @@ const (
 
 var (
 	p5Instance js.Value
-	global     js.Value
+	global     = js.Global()
 )
-
-func init() {
-	global = js.Global()
-}
 
 // Init initializes the p5 instance
 func Init(query string) {
@@ -163,34 +160,15 @@ func setupSketch() {
 func setupEventHandler(name string) {
 	if jsHandler := global.Get(name); jsHandler.Type() != js.TypeUndefined {
 		p5Instance.Set(name, js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-			switch name {
-			case "mouseMoved":
-				mouseMoved.Invoke(args[0])
-			case "mouseDragged":
-				mouseDragged.Invoke(args[0])
-			case "mousePressed":
-				mousePressed.Invoke(args[0])
-			case "mouseReleased":
-				mouseReleased.Invoke(args[0])
-			case "mouseClicked":
-				mouseClicked.Invoke(args[0])
-			case "doubleClicked":
-				doubleClicked.Invoke(args[0])
-			case "mouseWheel":
-				mouseWheel.Invoke(args[0])
-			case "keyPressed":
-				keyPressed.Invoke(args[0])
-			case "keyReleased":
-				keyReleased.Invoke(args[0])
-			case "keyTyped":
-				keyTyped.Invoke(args[0])
+			if handler, ok := eventHandlers[name]; ok {
+				handler(args[0])
 			}
 			return nil
 		}))
 	}
 }
 
-// Basic p5.js function wrappers
+// p5.js wrappers
 func CreateCanvas(w, h int) {
 	p5Instance.Call("createCanvas", w, h)
 }
@@ -201,10 +179,6 @@ func Background(args ...interface{}) {
 
 func Fill(args ...interface{}) {
 	p5Instance.Call("fill", args...)
-}
-
-func Stroke(args ...interface{}) {
-	p5Instance.Call("stroke", args...)
 }
 
 func NoFill() {
@@ -223,270 +197,28 @@ func Rect(x, y, w, h float64) {
 	p5Instance.Call("rect", x, y, w, h)
 }
 
-func Line(x1, y1, x2, y2 float64) {
-	p5Instance.Call("line", x1, y1, x2, y2)
-}
+// Event handlers to be implemented in user code
+var eventHandlers = make(map[string]func(js.Value))
 
-func Triangle(x1, y1, x2, y2, x3, y3 float64) {
-	p5Instance.Call("triangle", x1, y1, x2, y2, x3, y3)
-}
-
-func Point(x, y float64) {
-	p5Instance.Call("point", x, y)
-}
-
-// Math functions
-func Random(min, max float64) float64 {
-	return p5Instance.Call("random", min, max).Float()
-}
-
-func Map(value, start1, stop1, start2, stop2 float64) float64 {
-	return p5Instance.Call("map", value, start1, stop1, start2, stop2).Float()
-}
-
-// Color functions
-func Color(args ...interface{}) js.Value {
-	return p5Instance.Call("color", args...)
-}
-
-func Push() {
-	p5Instance.Call("push")
-}
-
-func Pop() {
-	p5Instance.Call("pop")
-}
-
-func Translate(x, y float64) {
-	p5Instance.Call("translate", x, y)
-}
-
-func Rotate(angle float64) {
-	p5Instance.Call("rotate", angle)
-}
-
-func TextSize(size float64) {
-	p5Instance.Call("textSize", size)
-}
-
-func Text(str string, x, y float64) {
-	p5Instance.Call("text", str, x, y)
-}
-
-// Vector represents a p5.Vector
-type Vector struct {
-	v js.Value
-}
-
-func CreateVector(x, y, z float64) Vector {
-	return Vector{v: p5Instance.Call("createVector", x, y, z)}
-}
-
-func (v Vector) X() float64 {
-	return v.v.Get("x").Float()
-}
-
-func (v Vector) Y() float64 {
-	return v.v.Get("y").Float()
-}
-
-func (v Vector) Z() float64 {
-	return v.v.Get("z").Float()
-}
-
-func (v Vector) Add(other Vector) Vector {
-	return Vector{v: v.v.Call("add", other.v)}
-}
-
-func (v Vector) Sub(other Vector) Vector {
-	return Vector{v: v.v.Call("sub", other.v)}
-}
-
-func (v Vector) Mult(n float64) Vector {
-	return Vector{v: v.v.Call("mult", n)}
-}
-
-func (v Vector) Div(n float64) Vector {
-	return Vector{v: v.v.Call("div", n)}
-}
-
-func (v Vector) Mag() float64 {
-	return v.v.Call("mag").Float()
-}
-
-func (v Vector) MagSq() float64 {
-	return v.v.Call("magSq").Float()
-}
-
-func (v Vector) Dot(other Vector) float64 {
-	return v.v.Call("dot", other.v).Float()
-}
-
-func (v Vector) Cross(other Vector) Vector {
-	return Vector{v: v.v.Call("cross", other.v)}
-}
-
-func (v Vector) Dist(other Vector) float64 {
-	return v.v.Call("dist", other.v).Float()
-}
-
-func (v Vector) Normalize() Vector {
-	return Vector{v: v.v.Call("normalize")}
-}
-
-func (v Vector) Limit(max float64) Vector {
-	return Vector{v: v.v.Call("limit", max)}
-}
-
-func (v Vector) SetMag(len float64) Vector {
-	return Vector{v: v.v.Call("setMag", len)}
-}
-
-func (v Vector) Heading() float64 {
-	return v.v.Call("heading").Float()
-}
-
-func (v Vector) Rotate(angle float64) Vector {
-	return Vector{v: v.v.Call("rotate", angle)}
-}
-
-func (v Vector) Lerp(other Vector, amt float64) Vector {
-	return Vector{v: v.v.Call("lerp", other.v, amt)}
-}
-
-func (v Vector) Equals(other Vector) bool {
-	return v.v.Call("equals", other.v).Bool()
-}
-
-// Event handlers (to be implemented in user code)
-var (
-	preload       js.Func
-	setup         js.Func
-	draw          js.Func
-	mouseMoved    js.Func
-	mouseDragged  js.Func
-	mousePressed  js.Func
-	mouseReleased js.Func
-	mouseClicked  js.Func
-	doubleClicked js.Func
-	mouseWheel    js.Func
-	keyPressed    js.Func
-	keyReleased   js.Func
-	keyTyped      js.Func
-)
-
-func SetPreload(f func()) {
-	preload = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		f()
-		return nil
-	})
-}
-
-func SetSetup(f func()) {
-	setup = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		f()
-		return nil
-	})
-}
-
-func SetDraw(f func()) {
-	draw = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		f()
-		return nil
-	})
-}
-
-func SetMouseMoved(f func(event js.Value)) {
-	mouseMoved = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		f(args[0])
-		return nil
-	})
-}
-
-func SetMouseDragged(f func(event js.Value)) {
-	mouseDragged = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		f(args[0])
-		return nil
-	})
-}
-
-func SetMousePressed(f func(event js.Value)) {
-	mousePressed = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		f(args[0])
-		return nil
-	})
-}
-
-func SetMouseReleased(f func(event js.Value)) {
-	mouseReleased = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		f(args[0])
-		return nil
-	})
-}
-
-func SetMouseClicked(f func(event js.Value)) {
-	mouseClicked = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		f(args[0])
-		return nil
-	})
-}
-
-func SetDoubleClicked(f func(event js.Value)) {
-	doubleClicked = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		f(args[0])
-		return nil
-	})
-}
-
-func SetMouseWheel(f func(event js.Value)) {
-	mouseWheel = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		f(args[0])
-		return nil
-	})
-}
-
-func SetKeyPressed(f func(event js.Value)) {
-	keyPressed = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		f(args[0])
-		return nil
-	})
-}
-
-func SetKeyReleased(f func(event js.Value)) {
-	keyReleased = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		f(args[0])
-		return nil
-	})
-}
-
-func SetKeyTyped(f func(event js.Value)) {
-	keyTyped = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		f(args[0])
-		return nil
-	})
+func SetEventHandler(eventName string, handler func(event js.Value)) {
+	eventHandlers[eventName] = handler
 }
 
 // Example usage:
 //
 // func main() {
-// 	p5.SetSetup(func() {
-// 		p5.CreateCanvas(400, 400)
+// 	p5go.SetEventHandler("setup", func(event js.Value) {
+// 		p5go.CreateCanvas(400, 400)
 // 	})
 //
-// 	p5.SetDraw(func() {
-// 		p5.Background(220)
-// 		p5.Fill(255, 0, 0)
-// 		p5.Ellipse(200, 200, 50, 50)
+// 	p5go.SetEventHandler("draw", func(event js.Value) {
+// 		p5go.Background(220)
+// 		p5go.Fill(255, 0, 0)
+// 		p5go.Ellipse(200, 200, 50, 50)
 // 	})
 //
-// 	p5.SetMousePressed(func(event js.Value) {
-// 		x := event.Get("mouseX").Float()
-// 		y := event.Get("mouseY").Float()
-// 		p5.Ellipse(x, y, 20, 20)
-// 	})
-//
-// 	p5.Init("main")
+// 	p5go.Init("main")
 //
 // 	// Prevent the program from exiting
 // 	select {}
-//
+// }
