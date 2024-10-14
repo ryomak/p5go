@@ -13,14 +13,14 @@ import (
 
 func main() {
     p5go.Run("#container",
-        p5go.Preload(func(p *p5go.P5Instance) {
+        p5go.Preload(func(p *p5go.Canvas) {
             // Preload assets
         }),
-        p5go.Setup(func(p *p5go.P5Instance) {
+        p5go.Setup(func(p *p5go.Canvas) {
             p.CreateCanvas(400, 400)
             p.Background(255)
         }),
-        p5go.Draw(func(p *p5go.P5Instance) {
+        p5go.Draw(func(p *p5go.Canvas) {
             p.Fill(0)
             p.Ellipse(200, 200, 50, 50)
         }),

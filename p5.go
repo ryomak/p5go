@@ -1,4 +1,4 @@
-// Package p5go provides a bridge between Go and p5.js, allowing you to create interactive visuals in Go
+// Package p5go provides a bridge between Go and p5.js.
 package p5go
 
 import (
@@ -128,19 +128,19 @@ func Run(query string, fs ...Func) error {
 	}
 	container.Set("innerHTML", "")
 
-	p5 := &P5Instance{
+	c := &Canvas{
 		p5Instance:   js.Undefined(),
 		funcHandlers: map[string]js.Func{},
 	}
 
 	sketch := js.FuncOf(func(this js.Value, args []js.Value) any {
-		p5.p5Instance = args[0]
+		c.p5Instance = args[0]
 		for _, f := range fs {
-			f(p5)
+			f(c)
 		}
 
-		for method, handler := range p5.funcHandlers {
-			p5.p5Instance.Set(method, handler)
+		for method, handler := range c.funcHandlers {
+			c.p5Instance.Set(method, handler)
 		}
 		return nil
 	})
@@ -148,298 +148,298 @@ func Run(query string, fs ...Func) error {
 	p5Constructor := global.Get("p5")
 	p5Constructor.New(sketch, container)
 
-	if err := p5.Validate(); err != nil {
+	if err := c.Validate(); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-type Func func(p *P5Instance)
+type Func func(c *Canvas)
 
-func Preload(handler func(p *P5Instance)) Func {
-	return func(p *P5Instance) {
-		p.funcHandlers["preload"] = js.FuncOf(func(value js.Value, args []js.Value) any {
-			handler(p)
+func Preload(handler func(c *Canvas)) Func {
+	return func(c *Canvas) {
+		c.funcHandlers["preload"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(c)
 			return nil
 		})
 	}
 }
 
-func Setup(handler func(p *P5Instance)) Func {
-	return func(p *P5Instance) {
-		p.funcHandlers["setup"] = js.FuncOf(func(value js.Value, args []js.Value) any {
-			handler(p)
+func Setup(handler func(c *Canvas)) Func {
+	return func(c *Canvas) {
+		c.funcHandlers["setup"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(c)
 			return nil
 		})
 	}
 }
 
-func Draw(handler func(p *P5Instance)) Func {
-	return func(p *P5Instance) {
-		p.funcHandlers["draw"] = js.FuncOf(func(value js.Value, args []js.Value) any {
-			handler(p)
+func Draw(handler func(c *Canvas)) Func {
+	return func(c *Canvas) {
+		c.funcHandlers["draw"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(c)
 			return nil
 		})
 	}
 }
 
-func MouseMoved(handler func(p *P5Instance)) Func {
-	return func(p *P5Instance) {
-		p.funcHandlers["mouseMoved"] = js.FuncOf(func(value js.Value, args []js.Value) any {
-			handler(p)
+func MouseMoved(handler func(c *Canvas)) Func {
+	return func(c *Canvas) {
+		c.funcHandlers["mouseMoved"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(c)
 			return nil
 		})
 	}
 }
 
-func MouseDragged(handler func(p *P5Instance)) Func {
-	return func(p *P5Instance) {
-		p.funcHandlers["mouseDragged"] = js.FuncOf(func(value js.Value, args []js.Value) any {
-			handler(p)
+func MouseDragged(handler func(c *Canvas)) Func {
+	return func(c *Canvas) {
+		c.funcHandlers["mouseDragged"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(c)
 			return nil
 		})
 	}
 }
 
-func MousePressed(handler func(p *P5Instance)) Func {
-	return func(p *P5Instance) {
-		p.funcHandlers["mousePressed"] = js.FuncOf(func(value js.Value, args []js.Value) any {
-			handler(p)
+func MousePressed(handler func(c *Canvas)) Func {
+	return func(c *Canvas) {
+		c.funcHandlers["mousePressed"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(c)
 			return nil
 		})
 	}
 }
 
-func MouseReleased(handler func(p *P5Instance)) Func {
-	return func(p *P5Instance) {
-		p.funcHandlers["mouseReleased"] = js.FuncOf(func(value js.Value, args []js.Value) any {
-			handler(p)
+func MouseReleased(handler func(c *Canvas)) Func {
+	return func(c *Canvas) {
+		c.funcHandlers["mouseReleased"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(c)
 			return nil
 		})
 	}
 }
 
-func MouseClicked(handler func(p *P5Instance)) Func {
-	return func(p *P5Instance) {
-		p.funcHandlers["mouseClicked"] = js.FuncOf(func(value js.Value, args []js.Value) any {
-			handler(p)
+func MouseClicked(handler func(c *Canvas)) Func {
+	return func(c *Canvas) {
+		c.funcHandlers["mouseClicked"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(c)
 			return nil
 		})
 	}
 }
 
-func DoubleClicked(handler func(p *P5Instance)) Func {
-	return func(p *P5Instance) {
-		p.funcHandlers["doubleClicked"] = js.FuncOf(func(value js.Value, args []js.Value) any {
-			handler(p)
+func DoubleClicked(handler func(c *Canvas)) Func {
+	return func(c *Canvas) {
+		c.funcHandlers["doubleClicked"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(c)
 			return nil
 		})
 	}
 }
 
-func MouseWheel(handler func(p *P5Instance)) Func {
-	return func(p *P5Instance) {
-		p.funcHandlers["mouseWheel"] = js.FuncOf(func(value js.Value, args []js.Value) any {
-			handler(p)
+func MouseWheel(handler func(c *Canvas)) Func {
+	return func(c *Canvas) {
+		c.funcHandlers["mouseWheel"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(c)
 			return nil
 		})
 	}
 }
 
-func KeyPressed(handler func(p *P5Instance)) Func {
-	return func(p *P5Instance) {
-		p.funcHandlers["keyPressed"] = js.FuncOf(func(value js.Value, args []js.Value) any {
-			handler(p)
+func KeyPressed(handler func(c *Canvas)) Func {
+	return func(c *Canvas) {
+		c.funcHandlers["keyPressed"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(c)
 			return nil
 		})
 	}
 }
 
-func KeyReleased(handler func(p *P5Instance)) Func {
-	return func(p *P5Instance) {
-		p.funcHandlers["keyReleased"] = js.FuncOf(func(value js.Value, args []js.Value) any {
-			handler(p)
+func KeyReleased(handler func(c *Canvas)) Func {
+	return func(c *Canvas) {
+		c.funcHandlers["keyReleased"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(c)
 			return nil
 		})
 	}
 }
 
-func KeyTyped(handler func(p *P5Instance)) Func {
-	return func(p *P5Instance) {
-		p.funcHandlers["keyTyped"] = js.FuncOf(func(value js.Value, args []js.Value) any {
-			handler(p)
+func KeyTyped(handler func(c *Canvas)) Func {
+	return func(c *Canvas) {
+		c.funcHandlers["keyTyped"] = js.FuncOf(func(value js.Value, args []js.Value) any {
+			handler(c)
 			return nil
 		})
 	}
 }
 
-type P5Instance struct {
+type Canvas struct {
 	p5Instance   js.Value
 	funcHandlers map[string]js.Func
 }
 
-func (p *P5Instance) Validate() error {
-	if p.p5Instance.Type() == js.TypeUndefined {
+func (c *Canvas) Validate() error {
+	if c.p5Instance.Type() == js.TypeUndefined {
 		return errors.New("p5.js is not loaded")
 	}
-	if p.funcHandlers["setup"].IsUndefined() {
+	if c.funcHandlers["setup"].IsUndefined() {
 		return errors.New("setup function is not defined")
 	}
-	if p.funcHandlers["draw"].IsUndefined() {
+	if c.funcHandlers["draw"].IsUndefined() {
 		return errors.New("draw function is not defined")
 	}
 	return nil
 }
 
-func (p *P5Instance) CreateCanvas(w, h int) {
-	p.p5Instance.Call("createCanvas", w, h)
+func (c *Canvas) CreateCanvas(w, h int) {
+	c.p5Instance.Call("createCanvas", w, h)
 }
 
-func (p *P5Instance) Background(args ...any) {
-	p.p5Instance.Call("background", args...)
+func (c *Canvas) Background(args ...any) {
+	c.p5Instance.Call("background", args...)
 }
 
-func (p *P5Instance) Fill(args ...any) {
-	p.p5Instance.Call("fill", args...)
+func (c *Canvas) Fill(args ...any) {
+	c.p5Instance.Call("fill", args...)
 }
 
-func (p *P5Instance) Stroke(args ...any) {
-	p.p5Instance.Call("stroke", args...)
+func (c *Canvas) Stroke(args ...any) {
+	c.p5Instance.Call("stroke", args...)
 }
 
-func (p *P5Instance) NoFill() {
-	p.p5Instance.Call("noFill")
+func (c *Canvas) NoFill() {
+	c.p5Instance.Call("noFill")
 }
 
-func (p *P5Instance) NoStroke() {
-	p.p5Instance.Call("noStroke")
+func (c *Canvas) NoStroke() {
+	c.p5Instance.Call("noStroke")
 }
 
-func (p *P5Instance) Ellipse(x, y, w, h float64) {
-	p.p5Instance.Call("ellipse", x, y, w, h)
+func (c *Canvas) Ellipse(x, y, w, h float64) {
+	c.p5Instance.Call("ellipse", x, y, w, h)
 }
 
-func (p *P5Instance) Rect(x, y, w, h float64) {
-	p.p5Instance.Call("rect", x, y, w, h)
+func (c *Canvas) Rect(x, y, w, h float64) {
+	c.p5Instance.Call("rect", x, y, w, h)
 }
 
-func (p *P5Instance) Line(x1, y1, x2, y2 float64) {
-	p.p5Instance.Call("line", x1, y1, x2, y2)
+func (c *Canvas) Line(x1, y1, x2, y2 float64) {
+	c.p5Instance.Call("line", x1, y1, x2, y2)
 }
 
-func (p *P5Instance) Triangle(x1, y1, x2, y2, x3, y3 float64) {
-	p.p5Instance.Call("triangle", x1, y1, x2, y2, x3, y3)
+func (c *Canvas) Triangle(x1, y1, x2, y2, x3, y3 float64) {
+	c.p5Instance.Call("triangle", x1, y1, x2, y2, x3, y3)
 }
 
-func (p *P5Instance) Point(x, y float64) {
-	p.p5Instance.Call("point", x, y)
+func (c *Canvas) Point(x, y float64) {
+	c.p5Instance.Call("point", x, y)
 }
 
-func (p *P5Instance) Arc(x, y, w, h, start, stop float64) {
-	p.p5Instance.Call("arc", x, y, w, h, start, stop)
+func (c *Canvas) Arc(x, y, w, h, start, stop float64) {
+	c.p5Instance.Call("arc", x, y, w, h, start, stop)
 }
 
-func (p *P5Instance) Bezier(x1, y1, x2, y2, x3, y3, x4, y4 float64) {
-	p.p5Instance.Call("bezier", x1, y1, x2, y2, x3, y3, x4, y4)
+func (c *Canvas) Bezier(x1, y1, x2, y2, x3, y3, x4, y4 float64) {
+	c.p5Instance.Call("bezier", x1, y1, x2, y2, x3, y3, x4, y4)
 }
 
-func (p *P5Instance) QuadraticVertex(cx, cy, x, y float64) {
-	p.p5Instance.Call("quadraticVertex", cx, cy, x, y)
+func (c *Canvas) QuadraticVertex(cx, cy, x, y float64) {
+	c.p5Instance.Call("quadraticVertex", cx, cy, x, y)
 }
 
-func (p *P5Instance) Curve(x1, y1, x2, y2, x3, y3, x4, y4 float64) {
-	p.p5Instance.Call("curve", x1, y1, x2, y2, x3, y3, x4, y4)
+func (c *Canvas) Curve(x1, y1, x2, y2, x3, y3, x4, y4 float64) {
+	c.p5Instance.Call("curve", x1, y1, x2, y2, x3, y3, x4, y4)
 }
 
-func (p *P5Instance) Text(str string, x, y float64) {
-	p.p5Instance.Call("text", str, x, y)
+func (c *Canvas) Text(str string, x, y float64) {
+	c.p5Instance.Call("text", str, x, y)
 }
 
-func (p *P5Instance) TextSize(size float64) {
-	p.p5Instance.Call("textSize", size)
+func (c *Canvas) TextSize(size float64) {
+	c.p5Instance.Call("textSize", size)
 }
 
-func (p *P5Instance) Push() {
-	p.p5Instance.Call("push")
+func (c *Canvas) Push() {
+	c.p5Instance.Call("push")
 }
 
-func (p *P5Instance) Pop() {
-	p.p5Instance.Call("pop")
+func (c *Canvas) Pop() {
+	c.p5Instance.Call("pop")
 }
 
-func (p *P5Instance) Translate(x, y float64) {
-	p.p5Instance.Call("translate", x, y)
+func (c *Canvas) Translate(x, y float64) {
+	c.p5Instance.Call("translate", x, y)
 }
 
-func (p *P5Instance) Rotate(angle float64) {
-	p.p5Instance.Call("rotate", angle)
+func (c *Canvas) Rotate(angle float64) {
+	c.p5Instance.Call("rotate", angle)
 }
 
-func (p *P5Instance) Scale(s float64) {
-	p.p5Instance.Call("scale", s)
+func (c *Canvas) Scale(s float64) {
+	c.p5Instance.Call("scale", s)
 }
 
-func (p *P5Instance) SaveCanvas(filename, extension string) {
-	p.p5Instance.Call("saveCanvas", filename, extension)
+func (c *Canvas) SaveCanvas(filename, extension string) {
+	c.p5Instance.Call("saveCanvas", filename, extension)
 }
 
-func (p *P5Instance) LoadImage(path string) js.Value {
-	return p.p5Instance.Call("loadImage", path)
+func (c *Canvas) LoadImage(path string) js.Value {
+	return c.p5Instance.Call("loadImage", path)
 }
 
-func (p *P5Instance) Image(img js.Value, x, y, w, h float64) {
-	p.p5Instance.Call("image", img, x, y, w, h)
+func (c *Canvas) Image(img js.Value, x, y, w, h float64) {
+	c.p5Instance.Call("image", img, x, y, w, h)
 }
 
-func (p *P5Instance) FrameRate(fps float64) {
-	p.p5Instance.Call("frameRate", fps)
+func (c *Canvas) FrameRate(fps float64) {
+	c.p5Instance.Call("frameRate", fps)
 }
 
-func (p *P5Instance) Random(min, max float64) float64 {
-	return p.p5Instance.Call("random", min, max).Float()
+func (c *Canvas) Random(min, max float64) float64 {
+	return c.p5Instance.Call("random", min, max).Float()
 }
 
-func (p *P5Instance) Map(value, start1, stop1, start2, stop2 float64) float64 {
-	return p.p5Instance.Call("map", value, start1, stop1, start2, stop2).Float()
+func (c *Canvas) Map(value, start1, stop1, start2, stop2 float64) float64 {
+	return c.p5Instance.Call("map", value, start1, stop1, start2, stop2).Float()
 }
 
-func (p *P5Instance) BeginShape() {
-	p.p5Instance.Call("beginShape")
+func (c *Canvas) BeginShape() {
+	c.p5Instance.Call("beginShape")
 }
 
-func (p *P5Instance) Vertex(x, y float64) {
-	p.p5Instance.Call("vertex", x, y)
+func (c *Canvas) Vertex(x, y float64) {
+	c.p5Instance.Call("vertex", x, y)
 }
 
-func (p *P5Instance) EndShape(mode ...string) {
+func (c *Canvas) EndShape(mode ...string) {
 	if len(mode) > 0 {
-		p.p5Instance.Call("endShape", mode[0])
+		c.p5Instance.Call("endShape", mode[0])
 	} else {
-		p.p5Instance.Call("endShape")
+		c.p5Instance.Call("endShape")
 	}
 }
 
-func (p *P5Instance) BezierVertex(cx1, cy1, cx2, cy2, x, y float64) {
-	p.p5Instance.Call("bezierVertex", cx1, cy1, cx2, cy2, x, y)
+func (c *Canvas) BezierVertex(cx1, cy1, cx2, cy2, x, y float64) {
+	c.p5Instance.Call("bezierVertex", cx1, cy1, cx2, cy2, x, y)
 }
 
-func (p *P5Instance) CurveVertex(x, y float64) {
-	p.p5Instance.Call("curveVertex", x, y)
+func (c *Canvas) CurveVertex(x, y float64) {
+	c.p5Instance.Call("curveVertex", x, y)
 }
 
-func (p *P5Instance) BeginContour() {
-	p.p5Instance.Call("beginContour")
+func (c *Canvas) BeginContour() {
+	c.p5Instance.Call("beginContour")
 }
 
-func (p *P5Instance) EndContour() {
-	p.p5Instance.Call("endContour")
+func (c *Canvas) EndContour() {
+	c.p5Instance.Call("endContour")
 }
 
-func (p *P5Instance) Close() {
-	p.p5Instance.Call("close")
+func (c *Canvas) Close() {
+	c.p5Instance.Call("close")
 }
 
-func (p *P5Instance) TextAlign(align string) {
-	p.p5Instance.Call("textAlign", align)
+func (c *Canvas) TextAlign(align string) {
+	c.p5Instance.Call("textAlign", align)
 }
