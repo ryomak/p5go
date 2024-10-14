@@ -1,6 +1,5 @@
 # p5go
-p5.js with go code
-
+p5go provides a bridge between Go and p5.js.
 inspired by https://github.com/ongaeshi/p5rb
 
 ## Usage
