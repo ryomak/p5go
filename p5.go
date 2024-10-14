@@ -120,7 +120,7 @@ var (
 )
 
 // Execute initializes the p5 p5Instance
-func Execute(query string, opts ...Option) error {
+func Execute(query string, fs ...Func) error {
 	// Get container
 	container := global.Get("document").Call("querySelector", query)
 	if container.IsNull() {
@@ -135,8 +135,8 @@ func Execute(query string, opts ...Option) error {
 
 	sketch := js.FuncOf(func(this js.Value, args []js.Value) any {
 		p5.p5Instance = args[0]
-		for _, opt := range opts {
-			opt(p5)
+		for _, f := range fs {
+			f(p5)
 		}
 
 		for method, handler := range p5.funcHandlers {
@@ -155,9 +155,9 @@ func Execute(query string, opts ...Option) error {
 	return nil
 }
 
-type Option func(p *P5Instance)
+type Func func(p *P5Instance)
 
-func Preload(handler func(p *P5Instance)) Option {
+func Preload(handler func(p *P5Instance)) Func {
 	return func(p *P5Instance) {
 		p.funcHandlers["preload"] = js.FuncOf(func(value js.Value, args []js.Value) any {
 			handler(p)
@@ -166,7 +166,7 @@ func Preload(handler func(p *P5Instance)) Option {
 	}
 }
 
-func Setup(handler func(p *P5Instance)) Option {
+func Setup(handler func(p *P5Instance)) Func {
 	return func(p *P5Instance) {
 		p.funcHandlers["setup"] = js.FuncOf(func(value js.Value, args []js.Value) any {
 			handler(p)
@@ -175,7 +175,7 @@ func Setup(handler func(p *P5Instance)) Option {
 	}
 }
 
-func Draw(handler func(p *P5Instance)) Option {
+func Draw(handler func(p *P5Instance)) Func {
 	return func(p *P5Instance) {
 		p.funcHandlers["draw"] = js.FuncOf(func(value js.Value, args []js.Value) any {
 			handler(p)
@@ -184,7 +184,7 @@ func Draw(handler func(p *P5Instance)) Option {
 	}
 }
 
-func MouseMoved(handler func(p *P5Instance)) Option {
+func MouseMoved(handler func(p *P5Instance)) Func {
 	return func(p *P5Instance) {
 		p.funcHandlers["mouseMoved"] = js.FuncOf(func(value js.Value, args []js.Value) any {
 			handler(p)
@@ -193,7 +193,7 @@ func MouseMoved(handler func(p *P5Instance)) Option {
 	}
 }
 
-func MouseDragged(handler func(p *P5Instance)) Option {
+func MouseDragged(handler func(p *P5Instance)) Func {
 	return func(p *P5Instance) {
 		p.funcHandlers["mouseDragged"] = js.FuncOf(func(value js.Value, args []js.Value) any {
 			handler(p)
@@ -202,7 +202,7 @@ func MouseDragged(handler func(p *P5Instance)) Option {
 	}
 }
 
-func MousePressed(handler func(p *P5Instance)) Option {
+func MousePressed(handler func(p *P5Instance)) Func {
 	return func(p *P5Instance) {
 		p.funcHandlers["mousePressed"] = js.FuncOf(func(value js.Value, args []js.Value) any {
 			handler(p)
@@ -211,7 +211,7 @@ func MousePressed(handler func(p *P5Instance)) Option {
 	}
 }
 
-func MouseReleased(handler func(p *P5Instance)) Option {
+func MouseReleased(handler func(p *P5Instance)) Func {
 	return func(p *P5Instance) {
 		p.funcHandlers["mouseReleased"] = js.FuncOf(func(value js.Value, args []js.Value) any {
 			handler(p)
@@ -220,7 +220,7 @@ func MouseReleased(handler func(p *P5Instance)) Option {
 	}
 }
 
-func MouseClicked(handler func(p *P5Instance)) Option {
+func MouseClicked(handler func(p *P5Instance)) Func {
 	return func(p *P5Instance) {
 		p.funcHandlers["mouseClicked"] = js.FuncOf(func(value js.Value, args []js.Value) any {
 			handler(p)
@@ -229,7 +229,7 @@ func MouseClicked(handler func(p *P5Instance)) Option {
 	}
 }
 
-func DoubleClicked(handler func(p *P5Instance)) Option {
+func DoubleClicked(handler func(p *P5Instance)) Func {
 	return func(p *P5Instance) {
 		p.funcHandlers["doubleClicked"] = js.FuncOf(func(value js.Value, args []js.Value) any {
 			handler(p)
@@ -238,7 +238,7 @@ func DoubleClicked(handler func(p *P5Instance)) Option {
 	}
 }
 
-func MouseWheel(handler func(p *P5Instance)) Option {
+func MouseWheel(handler func(p *P5Instance)) Func {
 	return func(p *P5Instance) {
 		p.funcHandlers["mouseWheel"] = js.FuncOf(func(value js.Value, args []js.Value) any {
 			handler(p)
@@ -247,7 +247,7 @@ func MouseWheel(handler func(p *P5Instance)) Option {
 	}
 }
 
-func KeyPressed(handler func(p *P5Instance)) Option {
+func KeyPressed(handler func(p *P5Instance)) Func {
 	return func(p *P5Instance) {
 		p.funcHandlers["keyPressed"] = js.FuncOf(func(value js.Value, args []js.Value) any {
 			handler(p)
@@ -256,7 +256,7 @@ func KeyPressed(handler func(p *P5Instance)) Option {
 	}
 }
 
-func KeyReleased(handler func(p *P5Instance)) Option {
+func KeyReleased(handler func(p *P5Instance)) Func {
 	return func(p *P5Instance) {
 		p.funcHandlers["keyReleased"] = js.FuncOf(func(value js.Value, args []js.Value) any {
 			handler(p)
@@ -265,7 +265,7 @@ func KeyReleased(handler func(p *P5Instance)) Option {
 	}
 }
 
-func KeyTyped(handler func(p *P5Instance)) Option {
+func KeyTyped(handler func(p *P5Instance)) Func {
 	return func(p *P5Instance) {
 		p.funcHandlers["keyTyped"] = js.FuncOf(func(value js.Value, args []js.Value) any {
 			handler(p)
@@ -296,15 +296,15 @@ func (p *P5Instance) CreateCanvas(w, h int) {
 	p.p5Instance.Call("createCanvas", w, h)
 }
 
-func (p *P5Instance) Background(args ...interface{}) {
+func (p *P5Instance) Background(args ...any) {
 	p.p5Instance.Call("background", args...)
 }
 
-func (p *P5Instance) Fill(args ...interface{}) {
+func (p *P5Instance) Fill(args ...any) {
 	p.p5Instance.Call("fill", args...)
 }
 
-func (p *P5Instance) Stroke(args ...interface{}) {
+func (p *P5Instance) Stroke(args ...any) {
 	p.p5Instance.Call("stroke", args...)
 }
 
@@ -443,24 +443,3 @@ func (p *P5Instance) Close() {
 func (p *P5Instance) TextAlign(align string) {
 	p.p5Instance.Call("textAlign", align)
 }
-
-// Example usage:
-//
-// func main() {
-// 	p5go.Execute("#container",
-// 		p5go.Preload(func(p *p5go.P5Instance) {
-// 			// Preload assets
-// 		}),
-// 		p5go.Setup(func(p *p5go.P5Instance) {
-// 			p.CreateCanvas(400, 400)
-// 			p.Background(255)
-// 		}),
-// 		p5go.Draw(func(p *p5go.P5Instance) {
-// 			p.Fill(0)
-// 			p.Ellipse(200, 200, 50, 50)
-// 		}),
-// 	)
-//
-// 	// Prevent the program from exiting
-// 	select {}
-// }
