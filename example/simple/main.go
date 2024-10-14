@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	err := p5go.Execute("main",
+	err := p5go.Run("main",
 		p5go.Setup(func(p *p5go.P5Instance) {
 			p.CreateCanvas(400, 400)
 			p.Background(128, 200, 128)

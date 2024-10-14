@@ -1,5 +1,7 @@
 # p5go
-p5.js with go.wasm.
+p5.js with go code
+
+inspired by https://github.com/ongaeshi/p5rb
 
 ## Usage
 ```go
@@ -10,7 +12,7 @@ import (
 )
 
 func main() {
-    p5go.Execute("#container",
+    p5go.Run("#container",
         p5go.Preload(func(p *p5go.P5Instance) {
             // Preload assets
         }),

@@ -119,8 +119,8 @@ var (
 	global = js.Global()
 )
 
-// Execute initializes the p5 p5Instance
-func Execute(query string, fs ...Func) error {
+// Run initializes the p5 p5Instance
+func Run(query string, fs ...Func) error {
 	// Get container
 	container := global.Get("document").Call("querySelector", query)
 	if container.IsNull() {
