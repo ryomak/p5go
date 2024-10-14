@@ -31,5 +31,5 @@ func main() {
 ```
 
 ## example
-see [example](https://github.com/ryomak/p5go/example)
+see [example](https://github.com/ryomak/p5go/tree/main/example)
 
