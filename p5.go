@@ -376,8 +376,28 @@ func (c *Canvas) Rotate(angle float64) {
 	c.p5Instance.Call("rotate", angle)
 }
 
+func (c *Canvas) RotateX(angle float64) {
+	c.p5Instance.Call("rotateX", angle)
+}
+
+func (c *Canvas) RotateY(angle float64) {
+	c.p5Instance.Call("rotateY", angle)
+}
+
+func (c *Canvas) RotateZ(angle float64) {
+	c.p5Instance.Call("rotateZ", angle)
+}
+
 func (c *Canvas) Scale(s float64) {
 	c.p5Instance.Call("scale", s)
+}
+
+func (c *Canvas) ShearX(angle float64) {
+	c.p5Instance.Call("shearX", angle)
+}
+
+func (c *Canvas) ShearY(angle float64) {
+	c.p5Instance.Call("shearY", angle)
 }
 
 func (c *Canvas) SaveCanvas(filename, extension string) {
@@ -442,4 +462,100 @@ func (c *Canvas) Close() {
 
 func (c *Canvas) TextAlign(align string) {
 	c.p5Instance.Call("textAlign", align)
+}
+
+func (c *Canvas) MouseX() float64 {
+	return c.p5Instance.Get("mouseX").Float()
+}
+
+func (c *Canvas) PMouseX() float64 {
+	return c.p5Instance.Get("pmouseX").Float()
+}
+
+func (c *Canvas) MouseY() float64 {
+	return c.p5Instance.Get("mouseY").Float()
+}
+
+func (c *Canvas) PMouseY() float64 {
+	return c.p5Instance.Get("pmouseY").Float()
+}
+
+func (c *Canvas) MouseIsPressed() bool {
+	return c.p5Instance.Get("mouseIsPressed").Bool()
+}
+
+func (c *Canvas) MovedX() float64 {
+	return c.p5Instance.Get("movedX").Float()
+}
+
+func (c *Canvas) MovedY() float64 {
+	return c.p5Instance.Get("movedY").Float()
+}
+
+func (c *Canvas) MouseButton() string {
+	return c.p5Instance.Get("mouseButton").String()
+}
+
+func (c *Canvas) saveGif(name string, second float64) {
+	c.p5Instance.Call("saveGif", name, second)
+}
+
+func (c *Canvas) Key() string {
+	return c.p5Instance.Get("key").String()
+}
+
+func (c *Canvas) KeyCode() int {
+	return c.p5Instance.Get("keyCode").Int()
+}
+
+func (c *Canvas) KeyIsPressed() bool {
+	return c.p5Instance.Get("keyIsPressed").Bool()
+}
+
+func (c *Canvas) ColorMode(mode string, max ...float64) {
+	if len(max) > 0 {
+		c.p5Instance.Call("colorMode", mode, max[0])
+	} else {
+		c.p5Instance.Call("colorMode", mode)
+	}
+}
+
+func (c *Canvas) Acos(value float64) float64 {
+	return c.p5Instance.Call("acos", value).Float()
+}
+
+func (c *Canvas) Cos(value float64) float64 {
+	return c.p5Instance.Call("cos", value).Float()
+}
+
+func (c *Canvas) AngleMode(mode string) {
+	c.p5Instance.Call("angleMode", mode)
+}
+
+func (c *Canvas) Asin(value float64) float64 {
+	return c.p5Instance.Call("asin", value).Float()
+}
+
+func (c *Canvas) Atan(value float64) float64 {
+	return c.p5Instance.Call("atan", value).Float()
+}
+
+func (c *Canvas) Atan2(y, x float64) float64 {
+	return c.p5Instance.Call("atan2", y, x).Float()
+}
+
+func (c *Canvas) Sin(value float64) float64 {
+	return c.p5Instance.Call("sin", value).Float()
+}
+
+func (c *Canvas) Tan(value float64) float64 {
+	return c.p5Instance.Call("tan", value).Float()
+}
+
+func (c *Canvas) Degrees(value float64) float64 {
+	return c.p5Instance.Call("degrees", value).Float()
+}
+
+func (c *Canvas) Radians(value float64) float64 {
+	return c.p5Instance.Call("radians", value).Float()
 }
