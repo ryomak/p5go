@@ -16,8 +16,10 @@ func main() {
 	p5go.Run("main",
 		p5go.Setup(setup),
 		p5go.Draw(draw),
-		p5go.MouseMoved(func(c *p5go.Canvas) {
-			fmt.Println(c.MouseX())
+		p5go.KeyPressed(func(c *p5go.Canvas) {
+			if c.Key() == "s" {
+				c.SaveGif("output.gif", 4)
+			}
 
 		}),
 	)

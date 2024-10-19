@@ -496,7 +496,7 @@ func (c *Canvas) MouseButton() string {
 	return c.p5Instance.Get("mouseButton").String()
 }
 
-func (c *Canvas) saveGif(name string, second float64) {
+func (c *Canvas) SaveGif(name string, second float64) {
 	c.p5Instance.Call("saveGif", name, second)
 }
 
