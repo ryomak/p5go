@@ -356,6 +356,10 @@ func (c *Canvas) Text(str string, x, y float64) {
 	c.p5Instance.Call("text", str, x, y)
 }
 
+func (c *Canvas) TextFont(font string, size float64) {
+	c.p5Instance.Call("textFont", font, size)
+}
+
 func (c *Canvas) TextSize(size float64) {
 	c.p5Instance.Call("textSize", size)
 }
@@ -424,8 +428,12 @@ func (c *Canvas) Map(value, start1, stop1, start2, stop2 float64) float64 {
 	return c.p5Instance.Call("map", value, start1, stop1, start2, stop2).Float()
 }
 
-func (c *Canvas) BeginShape() {
-	c.p5Instance.Call("beginShape")
+func (c *Canvas) BeginShape(option ...any) {
+	if len(option) > 0 {
+		c.p5Instance.Call("beginShape", option[0])
+	} else {
+		c.p5Instance.Call("beginShape")
+	}
 }
 
 func (c *Canvas) Vertex(x, y float64) {
@@ -462,6 +470,10 @@ func (c *Canvas) Close() {
 
 func (c *Canvas) TextAlign(align string) {
 	c.p5Instance.Call("textAlign", align)
+}
+
+func (c *Canvas) TextWrap(w string) {
+	c.p5Instance.Call("textWrap", w)
 }
 
 func (c *Canvas) MouseX() float64 {
@@ -558,4 +570,20 @@ func (c *Canvas) Degrees(value float64) float64 {
 
 func (c *Canvas) Radians(value float64) float64 {
 	return c.p5Instance.Call("radians", value).Float()
+}
+
+func (c *Canvas) StrokeWeight(weight float64) {
+	c.p5Instance.Call("strokeWeight", weight)
+}
+
+func (c *Canvas) StrokeCap(cap string) {
+	c.p5Instance.Call("strokeCap", cap)
+}
+
+func (c *Canvas) Erase(opt ...any) {
+	c.p5Instance.Call("erase", opt...)
+}
+
+func (c *Canvas) NoErase() {
+	c.p5Instance.Call("noErase")
 }
