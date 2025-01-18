@@ -128,6 +128,21 @@ func Run(query string, fs ...Func) error {
 	}
 	container.Set("innerHTML", "")
 
+	// P5.jsがロードされていない場合は追加
+	if global.Get("p5").IsUndefined() {
+		doc := global.Get("document")
+		script := doc.Call("createElement", "script")
+		script.Set("src", "https://cdn.jsdelivr.net/npm/p5@1.11.2/lib/p5.min.js")
+		doc.Get("head").Call("appendChild", script)
+
+		ch := make(chan struct{})
+		script.Set("onload", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+			close(ch)
+			return nil
+		}))
+		<-ch
+	}
+
 	c := &Canvas{
 		p5Instance:   js.Undefined(),
 		funcHandlers: map[string]js.Func{},
@@ -586,4 +601,36 @@ func (c *Canvas) Erase(opt ...any) {
 
 func (c *Canvas) NoErase() {
 	c.p5Instance.Call("noErase")
+}
+
+func (c *Canvas) FrameCount() int {
+	return c.p5Instance.Get("frameCount").Int()
+}
+
+func (c *Canvas) GetFrameRate() float64 {
+	return c.p5Instance.Get("frameRate").Float()
+}
+
+func (c *Canvas) Loop() {
+	c.p5Instance.Call("loop")
+}
+
+func (c *Canvas) NoLoop() {
+	c.p5Instance.Call("noLoop")
+}
+
+func (c *Canvas) IsLooping() bool {
+	return c.p5Instance.Call("isLooping").Bool()
+}
+
+func (c *Canvas) Redraw() {
+	c.p5Instance.Call("redraw")
+}
+
+func (c *Canvas) Save(filename string) {
+	c.p5Instance.Call("save", filename)
+}
+
+func (c *Canvas) SaveFrames(filename string, extension string, duration float64, fps float64) {
+	c.p5Instance.Call("saveFrames", filename, extension, duration, fps)
 }
