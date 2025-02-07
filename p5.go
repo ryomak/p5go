@@ -944,11 +944,12 @@ func (c *Canvas) Sqrt(n float64) float64 {
 }
 
 // CreateGraphics creates and returns a new graphics buffer.
-func (c *Canvas) CreateGraphics(w, h float64, renderer ...string) js.Value {
+func (c *Canvas) CreateGraphics(w, h float64, renderer ...string) *Canvas {
 	if len(renderer) > 0 {
-		return c.p5Instance.Call("createGraphics", w, h, renderer[0])
+		return &Canvas{p5Instance: c.p5Instance.Call("createGraphics", w, h, renderer...)}
+	} else {
+		return &Canvas{p5Instance: c.p5Instance.Call("createGraphics", w, h)}
 	}
-	return c.p5Instance.Call("createGraphics", w, h)
 }
 
 // BlendMode sets the blending mode for the canvas.
@@ -1023,4 +1024,27 @@ func (c *Canvas) Smooth() {
 // NoSmooth draws all geometry with jagged (aliased) edges.
 func (c *Canvas) NoSmooth() {
 	c.p5Instance.Call("noSmooth")
+}
+
+// CaptureKind is a type that represents the kind of capture.
+type CaptureKind string
+
+const (
+	CaptureKindVIDEO CaptureKind = "VIDEO"
+	CaptureKindIMAGE CaptureKind = "IMAGE"
+)
+
+// CreateCapture creates a capture object.
+func (c *Canvas) CreateCapture(kind CaptureKind) js.Value {
+	return c.p5Instance.Call("createCapture", string(kind))
+}
+
+// Size sets the size of the canvas.
+func (c *Canvas) Size(width, height float64) {
+	c.p5Instance.Call("size", width, height)
+}
+
+// Hide hides the canvas.
+func (c *Canvas) Hide() {
+	c.p5Instance.Call("hide")
 }
