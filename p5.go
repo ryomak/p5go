@@ -128,6 +128,21 @@ func Run(query string, fs ...Func) error {
 	}
 	container.Set("innerHTML", "")
 
+	// P5.jsがロードされていない場合は追加
+	if global.Get("p5").IsUndefined() {
+		doc := global.Get("document")
+		script := doc.Call("createElement", "script")
+		script.Set("src", "https://cdn.jsdelivr.net/npm/p5@1.11.2/lib/p5.min.js")
+		doc.Get("head").Call("appendChild", script)
+
+		ch := make(chan struct{})
+		script.Set("onload", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+			close(ch)
+			return nil
+		}))
+		<-ch
+	}
+
 	c := &Canvas{
 		p5Instance:   js.Undefined(),
 		funcHandlers: map[string]js.Func{},
@@ -588,9 +603,281 @@ func (c *Canvas) NoErase() {
 	c.p5Instance.Call("noErase")
 }
 
-func (c *Canvas) CreateGraphics(width, height int, opt ...any) js.Value {
-	if len(opt) > 0 {
-		return c.p5Instance.Call("createGraphics", width, height, opt...)
+func (c *Canvas) FrameCount() int {
+	return c.p5Instance.Get("frameCount").Int()
+}
+
+func (c *Canvas) GetFrameRate() float64 {
+	return c.p5Instance.Get("frameRate").Float()
+}
+
+func (c *Canvas) Loop() {
+	c.p5Instance.Call("loop")
+}
+
+func (c *Canvas) NoLoop() {
+	c.p5Instance.Call("noLoop")
+}
+
+func (c *Canvas) IsLooping() bool {
+	return c.p5Instance.Call("isLooping").Bool()
+}
+
+func (c *Canvas) Redraw() {
+	c.p5Instance.Call("redraw")
+}
+
+func (c *Canvas) Save(filename string) {
+	c.p5Instance.Call("save", filename)
+}
+
+func (c *Canvas) SaveFrames(filename string, extension string, duration float64, fps float64) {
+	c.p5Instance.Call("saveFrames", filename, extension, duration, fps)
+}
+
+// Shape
+func (c *Canvas) Circle(x, y, d float64) {
+	c.p5Instance.Call("circle", x, y, d)
+}
+
+func (c *Canvas) Square(x, y, s float64) {
+	c.p5Instance.Call("square", x, y, s)
+}
+
+// Color
+func (c *Canvas) Color(args ...any) js.Value {
+	return c.p5Instance.Call("color", args...)
+}
+
+func (c *Canvas) Clear() {
+	c.p5Instance.Call("clear")
+}
+
+func (c *Canvas) Alpha(color js.Value) float64 {
+	return c.p5Instance.Call("alpha", color).Float()
+}
+
+func (c *Canvas) Red(color js.Value) float64 {
+	return c.p5Instance.Call("red", color).Float()
+}
+
+func (c *Canvas) Green(color js.Value) float64 {
+	return c.p5Instance.Call("green", color).Float()
+}
+
+func (c *Canvas) Blue(color js.Value) float64 {
+	return c.p5Instance.Call("blue", color).Float()
+}
+
+func (c *Canvas) Brightness(color js.Value) float64 {
+	return c.p5Instance.Call("brightness", color).Float()
+}
+
+func (c *Canvas) Hue(color js.Value) float64 {
+	return c.p5Instance.Call("hue", color).Float()
+}
+
+func (c *Canvas) Saturation(color js.Value) float64 {
+	return c.p5Instance.Call("saturation", color).Float()
+}
+
+func (c *Canvas) LerpColor(c1 js.Value, c2 js.Value, amt float64) js.Value {
+	return c.p5Instance.Call("lerpColor", c1, c2, amt)
+}
+
+// Typography
+func (c *Canvas) TextAscent() float64 {
+	return c.p5Instance.Call("textAscent").Float()
+}
+
+func (c *Canvas) TextDescent() float64 {
+	return c.p5Instance.Call("textDescent").Float()
+}
+
+func (c *Canvas) TextLeading(leading float64) {
+	c.p5Instance.Call("textLeading", leading)
+}
+
+func (c *Canvas) TextStyle(style string) {
+	c.p5Instance.Call("textStyle", style)
+}
+
+func (c *Canvas) TextWidth(text string) float64 {
+	return c.p5Instance.Call("textWidth", text).Float()
+}
+
+// Environment
+func (c *Canvas) Cursor(style string) {
+	c.p5Instance.Call("cursor", style)
+}
+
+func (c *Canvas) NoCursor() {
+	c.p5Instance.Call("noCursor")
+}
+
+func (c *Canvas) WindowWidth() float64 {
+	return c.p5Instance.Get("windowWidth").Float()
+}
+
+func (c *Canvas) WindowHeight() float64 {
+	return c.p5Instance.Get("windowHeight").Float()
+}
+
+func (c *Canvas) Width() float64 {
+	return c.p5Instance.Get("width").Float()
+}
+
+func (c *Canvas) Height() float64 {
+	return c.p5Instance.Get("height").Float()
+}
+
+// Transform
+func (c *Canvas) ApplyMatrix(a, b, c1, d, e, f float64) {
+	c.p5Instance.Call("applyMatrix", a, b, c1, d, e, f)
+}
+
+func (c *Canvas) ResetMatrix() {
+	c.p5Instance.Call("resetMatrix")
+}
+
+// Math
+func (c *Canvas) Abs(n float64) float64 {
+	return c.p5Instance.Call("abs", n).Float()
+}
+
+func (c *Canvas) Ceil(n float64) float64 {
+	return c.p5Instance.Call("ceil", n).Float()
+}
+
+func (c *Canvas) Constrain(n, low, high float64) float64 {
+	return c.p5Instance.Call("constrain", n, low, high).Float()
+}
+
+func (c *Canvas) Dist(x1, y1, x2, y2 float64) float64 {
+	return c.p5Instance.Call("dist", x1, y1, x2, y2).Float()
+}
+
+func (c *Canvas) Exp(n float64) float64 {
+	return c.p5Instance.Call("exp", n).Float()
+}
+
+func (c *Canvas) Floor(n float64) float64 {
+	return c.p5Instance.Call("floor", n).Float()
+}
+
+func (c *Canvas) Lerp(start, stop, amt float64) float64 {
+	return c.p5Instance.Call("lerp", start, stop, amt).Float()
+}
+
+func (c *Canvas) Log(n float64) float64 {
+	return c.p5Instance.Call("log", n).Float()
+}
+
+func (c *Canvas) Mag(x, y float64) float64 {
+	return c.p5Instance.Call("mag", x, y).Float()
+}
+
+func (c *Canvas) Max(args ...float64) float64 {
+	values := make([]any, len(args))
+	for i, v := range args {
+		values[i] = v
 	}
-	return c.p5Instance.Call("createGraphics", width, height)
+	return c.p5Instance.Call("max", values...).Float()
+}
+
+func (c *Canvas) Min(args ...float64) float64 {
+	values := make([]any, len(args))
+	for i, v := range args {
+		values[i] = v
+	}
+	return c.p5Instance.Call("min", values...).Float()
+}
+
+func (c *Canvas) Norm(value, start, stop float64) float64 {
+	return c.p5Instance.Call("norm", value, start, stop).Float()
+}
+
+func (c *Canvas) Pow(n, e float64) float64 {
+	return c.p5Instance.Call("pow", n, e).Float()
+}
+
+func (c *Canvas) Round(n float64) float64 {
+	return c.p5Instance.Call("round", n).Float()
+}
+
+func (c *Canvas) Sq(n float64) float64 {
+	return c.p5Instance.Call("sq", n).Float()
+}
+
+func (c *Canvas) Sqrt(n float64) float64 {
+	return c.p5Instance.Call("sqrt", n).Float()
+}
+
+// Rendering
+func (c *Canvas) CreateGraphics(w, h int, renderer ...string) js.Value {
+	if len(renderer) > 0 {
+		return c.p5Instance.Call("createGraphics", w, h, renderer[0])
+	}
+	return c.p5Instance.Call("createGraphics", w, h)
+}
+
+func (c *Canvas) BlendMode(mode string) {
+	c.p5Instance.Call("blendMode", mode)
+}
+
+func (c *Canvas) LoadPixels() {
+	c.p5Instance.Call("loadPixels")
+}
+
+func (c *Canvas) UpdatePixels() {
+	c.p5Instance.Call("updatePixels")
+}
+
+func (c *Canvas) Get(x, y float64) js.Value {
+	return c.p5Instance.Call("get", x, y)
+}
+
+func (c *Canvas) Set(x, y float64, color js.Value) {
+	c.p5Instance.Call("set", x, y, color)
+}
+
+func (c *Canvas) Copy(srcImage js.Value, sx, sy, sw, sh, dx, dy, dw, dh float64) {
+	c.p5Instance.Call("copy", srcImage, sx, sy, sw, sh, dx, dy, dw, dh)
+}
+
+func (c *Canvas) Filter(filterType string, value ...float64) {
+	if len(value) > 0 {
+		c.p5Instance.Call("filter", filterType, value[0])
+	} else {
+		c.p5Instance.Call("filter", filterType)
+	}
+}
+
+func (c *Canvas) Blend(sx, sy, sw, sh, dx, dy, dw, dh float64, blendMode string) {
+	c.p5Instance.Call("blend", sx, sy, sw, sh, dx, dy, dw, dh, blendMode)
+}
+
+func (c *Canvas) Mask(img js.Value) {
+	c.p5Instance.Call("mask", img)
+}
+
+// Shape Attributes
+func (c *Canvas) EllipseMode(mode string) {
+	c.p5Instance.Call("ellipseMode", mode)
+}
+
+func (c *Canvas) RectMode(mode string) {
+	c.p5Instance.Call("rectMode", mode)
+}
+
+func (c *Canvas) StrokeJoin(join string) {
+	c.p5Instance.Call("strokeJoin", join)
+}
+
+func (c *Canvas) Smooth() {
+	c.p5Instance.Call("smooth")
+}
+
+func (c *Canvas) NoSmooth() {
+	c.p5Instance.Call("noSmooth")
 }
