@@ -329,11 +329,7 @@ func (c *Canvas) Validate() error {
 
 // CreateCanvas creates a new canvas with the specified width and height.
 func (c *Canvas) CreateCanvas(w, h int, opts ...any) {
-	if len(opts) > 0 {
-		c.p5Instance.Call("createCanvas", w, h, opts...)
-	} else {
-		c.p5Instance.Call("createCanvas", w, h)
-	}
+	c.p5Instance.Call("createCanvas", append([]any{w, h}, opts...)...)
 }
 
 // Background sets the background color of the canvas.
@@ -483,7 +479,7 @@ func (c *Canvas) LoadImage(path string) js.Value {
 
 // Image draws an image on the canvas.
 func (c *Canvas) Image(img any, opts ...any) {
-	c.p5Instance.Call("image", img, opts...)
+	c.p5Instance.Call("image", append([]any{img}, opts...)...)
 }
 
 // FrameRate sets the frame rate for the canvas.
@@ -952,12 +948,8 @@ func (c *Canvas) Sqrt(n float64) float64 {
 }
 
 // CreateGraphics creates and returns a new graphics buffer.
-func (c *Canvas) CreateGraphics(w, h float64, renderer ...string) *Canvas {
-	if len(renderer) > 0 {
-		return &Canvas{p5Instance: c.p5Instance.Call("createGraphics", w, h, renderer...)}
-	} else {
-		return &Canvas{p5Instance: c.p5Instance.Call("createGraphics", w, h)}
-	}
+func (c *Canvas) CreateGraphics(w, h float64, renderer ...any) *Canvas {
+	return &Canvas{p5Instance: c.p5Instance.Call("createGraphics", append([]any{w, h}, renderer...)...)}
 }
 
 // BlendMode sets the blending mode for the canvas.
