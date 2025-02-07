@@ -944,7 +944,7 @@ func (c *Canvas) Sqrt(n float64) float64 {
 }
 
 // CreateGraphics creates and returns a new graphics buffer.
-func (c *Canvas) CreateGraphics(w, h int, renderer ...string) js.Value {
+func (c *Canvas) CreateGraphics(w, h float64, renderer ...string) js.Value {
 	if len(renderer) > 0 {
 		return c.p5Instance.Call("createGraphics", w, h, renderer[0])
 	}
