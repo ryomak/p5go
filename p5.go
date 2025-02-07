@@ -113,6 +113,10 @@ const (
 	// Device orientation
 	LANDSCAPE = "landscape"
 	PORTRAIT  = "portrait"
+
+	// Canvas renderer
+	CanvasRendererWEBGL = "WEBGL"
+	CanvasRendererP2D   = "P2D"
 )
 
 var (
@@ -324,8 +328,12 @@ func (c *Canvas) Validate() error {
 }
 
 // CreateCanvas creates a new canvas with the specified width and height.
-func (c *Canvas) CreateCanvas(w, h int) {
-	c.p5Instance.Call("createCanvas", w, h)
+func (c *Canvas) CreateCanvas(w, h int, opts ...any) {
+	if len(opts) > 0 {
+		c.p5Instance.Call("createCanvas", w, h, opts...)
+	} else {
+		c.p5Instance.Call("createCanvas", w, h)
+	}
 }
 
 // Background sets the background color of the canvas.
