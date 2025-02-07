@@ -474,8 +474,8 @@ func (c *Canvas) LoadImage(path string) js.Value {
 }
 
 // Image draws an image on the canvas.
-func (c *Canvas) Image(img js.Value, x, y, w, h float64) {
-	c.p5Instance.Call("image", img, x, y, w, h)
+func (c *Canvas) Image(img any, opts ...any) {
+	c.p5Instance.Call("image", img, opts...)
 }
 
 // FrameRate sets the frame rate for the canvas.
