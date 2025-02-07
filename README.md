@@ -2,6 +2,8 @@
 p5go provides a bridge between Go and p5.js.
 inspired by https://github.com/ongaeshi/p5rb
 
+* Pull requests are welcome as there are missing features.
+
 ## Usage
 
 ```go

@@ -587,3 +587,10 @@ func (c *Canvas) Erase(opt ...any) {
 func (c *Canvas) NoErase() {
 	c.p5Instance.Call("noErase")
 }
+
+func (c *Canvas) CreateGraphics(width, height int, opt ...any) js.Value {
+	if len(opt) > 0 {
+		return c.p5Instance.Call("createGraphics", width, height, opt...)
+	}
+	return c.p5Instance.Call("createGraphics", width, height)
+}
