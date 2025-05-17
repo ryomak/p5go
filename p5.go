@@ -8,115 +8,174 @@ import (
 	"syscall/js"
 )
 
-// Constants
+// RendererMode represents the rendering mode for the canvas
+type RendererMode string
+
 const (
 	// Renderer modes
-	P2D   = "p2d"
-	WEBGL = "webgl"
+	P2D   RendererMode = "p2d"
+	WEBGL RendererMode = "webgl"
+)
 
+// CursorStyle represents the cursor style
+type CursorStyle string
+
+const (
 	// Environment
-	ARROW = "default"
-	CROSS = "crosshair"
-	HAND  = "pointer"
-	MOVE  = "move"
-	TEXT  = "text"
-	WAIT  = "wait"
+	ARROW CursorStyle = "default"
+	CROSS CursorStyle = "crosshair"
+	HAND  CursorStyle = "pointer"
+	MOVE  CursorStyle = "move"
+	TEXT  CursorStyle = "text"
+	WAIT  CursorStyle = "wait"
+)
 
+// AngleMode represents the angle mode
+type AngleMode string
+
+const (
 	// Trigonometry
-	PI         = math.Pi
-	HALF_PI    = math.Pi / 2
-	QUARTER_PI = math.Pi / 4
-	TWO_PI     = math.Pi * 2
-	TAU        = TWO_PI
-	DEGREES    = "degrees"
-	RADIANS    = "radians"
+	PI                   = math.Pi
+	HALF_PI              = math.Pi / 2
+	QUARTER_PI           = math.Pi / 4
+	TWO_PI               = math.Pi * 2
+	TAU                  = TWO_PI
+	DEGREES    AngleMode = "degrees"
+	RADIANS    AngleMode = "radians"
+)
 
+// ColorMode represents the color mode
+type ColorMode string
+
+const (
 	// Color modes
-	RGB = "rgb"
-	HSB = "hsb"
-	HSL = "hsl"
+	RGB ColorMode = "rgb"
+	HSB ColorMode = "hsb"
+	HSL ColorMode = "hsl"
+)
 
+// DrawingMode represents the drawing mode
+type DrawingMode string
+
+const (
 	// Drawing modes
-	CORNER   = "corner"
-	CORNERS  = "corners"
-	RADIUS   = "radius"
-	RIGHT    = "right"
-	LEFT     = "left"
-	CENTER   = "center"
-	TOP      = "top"
-	BOTTOM   = "bottom"
-	BASELINE = "alphabetic"
+	CORNER   DrawingMode = "corner"
+	CORNERS  DrawingMode = "corners"
+	RADIUS   DrawingMode = "radius"
+	RIGHT    DrawingMode = "right"
+	LEFT     DrawingMode = "left"
+	CENTER   DrawingMode = "center"
+	TOP      DrawingMode = "top"
+	BOTTOM   DrawingMode = "bottom"
+	BASELINE DrawingMode = "alphabetic"
+)
 
-	// Shape modes
-	POINTS         = 0x0000
-	LINES          = 0x0001
-	LINE_STRIP     = 0x0003
-	LINE_LOOP      = 0x0002
-	TRIANGLES      = 0x0004
-	TRIANGLE_FAN   = 0x0006
-	TRIANGLE_STRIP = 0x0005
-	QUADS          = "quads"
-	QUAD_STRIP     = "quad_strip"
-	TESS           = "tess"
-	CLOSE          = "close"
-	OPEN           = "open"
-	CHORD          = "chord"
-	PIE            = "pie"
-	PROJECT        = "square"
-	SQUARE         = "butt"
-	ROUND          = "round"
-	BEVEL          = "bevel"
-	MITER          = "miter"
+// ShapeType represents the type of shape
+// P5.jsの beginShape で使う型
+// https://p5js.org/reference/#/p5/beginShape
+// "POINTS", "LINES", "TRIANGLES", "TRIANGLE_FAN", "TRIANGLE_STRIP", "QUADS", "QUAD_STRIP", "TESS"
+type ShapeType string
 
+const (
+	POINTS         ShapeType = "POINTS"
+	LINES          ShapeType = "LINES"
+	LINE_STRIP     ShapeType = "LINE_STRIP"
+	LINE_LOOP      ShapeType = "LINE_LOOP"
+	TRIANGLES      ShapeType = "TRIANGLES"
+	TRIANGLE_FAN   ShapeType = "TRIANGLE_FAN"
+	TRIANGLE_STRIP ShapeType = "TRIANGLE_STRIP"
+	QUADS          ShapeType = "QUADS"
+	QUAD_STRIP     ShapeType = "QUAD_STRIP"
+	TESS           ShapeType = "TESS"
+	CLOSE          ShapeType = "close"
+	OPEN           ShapeType = "open"
+	CHORD          ShapeType = "chord"
+	PIE            ShapeType = "pie"
+	PROJECT        ShapeType = "square"
+	SQUARE         ShapeType = "butt"
+	ROUND          ShapeType = "round"
+	BEVEL          ShapeType = "bevel"
+	MITER          ShapeType = "miter"
+)
+
+// BlendMode represents the blending mode
+type BlendMode string
+
+const (
 	// Blend modes
-	BLEND      = "source-over"
-	REMOVE     = "destination-out"
-	ADD        = "lighter"
-	DARKEST    = "darken"
-	LIGHTEST   = "lighten"
-	DIFFERENCE = "difference"
-	SUBTRACT   = "subtract"
-	EXCLUSION  = "exclusion"
-	MULTIPLY   = "multiply"
-	SCREEN     = "screen"
-	REPLACE    = "copy"
-	OVERLAY    = "overlay"
-	HARD_LIGHT = "hard-light"
-	SOFT_LIGHT = "soft-light"
-	DODGE      = "color-dodge"
-	BURN       = "color-burn"
+	BLEND      BlendMode = "source-over"
+	REMOVE     BlendMode = "destination-out"
+	ADD        BlendMode = "lighter"
+	DARKEST    BlendMode = "darken"
+	LIGHTEST   BlendMode = "lighten"
+	DIFFERENCE BlendMode = "difference"
+	SUBTRACT   BlendMode = "subtract"
+	EXCLUSION  BlendMode = "exclusion"
+	MULTIPLY   BlendMode = "multiply"
+	SCREEN     BlendMode = "screen"
+	REPLACE    BlendMode = "copy"
+	OVERLAY    BlendMode = "overlay"
+	HARD_LIGHT BlendMode = "hard-light"
+	SOFT_LIGHT BlendMode = "soft-light"
+	DODGE      BlendMode = "color-dodge"
+	BURN       BlendMode = "color-burn"
+)
 
+// FilterType represents the type of filter
+type FilterType string
+
+const (
 	// Image filters
-	THRESHOLD = "threshold"
-	GRAY      = "gray"
-	OPAQUE    = "opaque"
-	INVERT    = "invert"
-	POSTERIZE = "posterize"
-	DILATE    = "dilate"
-	ERODE     = "erode"
-	BLUR      = "blur"
+	THRESHOLD FilterType = "threshold"
+	GRAY      FilterType = "gray"
+	OPAQUE    FilterType = "opaque"
+	INVERT    FilterType = "invert"
+	POSTERIZE FilterType = "posterize"
+	DILATE    FilterType = "dilate"
+	ERODE     FilterType = "erode"
+	BLUR      FilterType = "blur"
+)
 
+// TextStyle represents the style of text
+type TextStyle string
+
+const (
 	// Typography
-	NORMAL     = "normal"
-	ITALIC     = "italic"
-	BOLD       = "bold"
-	BOLDITALIC = "bold italic"
+	NORMAL     TextStyle = "normal"
+	ITALIC     TextStyle = "italic"
+	BOLD       TextStyle = "bold"
+	BOLDITALIC TextStyle = "bold italic"
+)
 
+// WebGLMode represents the WebGL mode
+type WebGLMode string
+
+const (
 	// Web GL specific
-	IMMEDIATE = "immediate"
-	IMAGE     = "image"
-	NEAREST   = "nearest"
-	REPEAT    = "repeat"
-	CLAMP     = "clamp"
-	MIRROR    = "mirror"
+	IMMEDIATE WebGLMode = "immediate"
+	IMAGE     WebGLMode = "image"
+	NEAREST   WebGLMode = "nearest"
+	REPEAT    WebGLMode = "repeat"
+	CLAMP     WebGLMode = "clamp"
+	MIRROR    WebGLMode = "mirror"
+)
 
+// Orientation represents the device orientation
+type Orientation string
+
+const (
 	// Device orientation
-	LANDSCAPE = "landscape"
-	PORTRAIT  = "portrait"
+	LANDSCAPE Orientation = "landscape"
+	PORTRAIT  Orientation = "portrait"
+)
 
+// CanvasRenderer represents the canvas renderer
+type CanvasRenderer string
+
+const (
 	// Canvas renderer
-	CanvasRendererWEBGL = "WEBGL"
-	CanvasRendererP2D   = "P2D"
+	CanvasRendererWEBGL CanvasRenderer = "WEBGL"
+	CanvasRendererP2D   CanvasRenderer = "P2D"
 )
 
 var (
@@ -217,51 +276,81 @@ func MouseMoved(handler func(c *Canvas)) Func {
 	}
 }
 
-// MouseDragged sets the mouseDragged handler for the canvas.
-func MouseDragged(handler func(c *Canvas)) Func {
+// MouseDragged sets the mouseDragged handler with a MouseDraggedEvent
+func MouseDragged(handler MouseDraggedHandler) Func {
 	return func(c *Canvas) {
 		c.funcHandlers["mouseDragged"] = js.FuncOf(func(value js.Value, args []js.Value) any {
-			handler(c)
+			e := MouseDraggedEvent{
+				X:       c.MouseX(),
+				Y:       c.MouseY(),
+				Button:  c.MouseButton(),
+				Pressed: c.MouseIsPressed(),
+			}
+			handler(c, e)
 			return nil
 		})
 	}
 }
 
-// MousePressed sets the mousePressed handler for the canvas.
-func MousePressed(handler func(c *Canvas)) Func {
+// MousePressed sets the mousePressed handler with a MouseEvent
+func MousePressed(handler MousePressedHandler) Func {
 	return func(c *Canvas) {
 		c.funcHandlers["mousePressed"] = js.FuncOf(func(value js.Value, args []js.Value) any {
-			handler(c)
+			e := MouseEvent{
+				X:       c.MouseX(),
+				Y:       c.MouseY(),
+				Button:  c.MouseButton(),
+				Pressed: c.MouseIsPressed(),
+			}
+			handler(c, e)
 			return nil
 		})
 	}
 }
 
-// MouseReleased sets the mouseReleased handler for the canvas.
-func MouseReleased(handler func(c *Canvas)) Func {
+// MouseReleased sets the mouseReleased handler with a MouseReleasedEvent
+func MouseReleased(handler MouseReleasedHandler) Func {
 	return func(c *Canvas) {
 		c.funcHandlers["mouseReleased"] = js.FuncOf(func(value js.Value, args []js.Value) any {
-			handler(c)
+			e := MouseReleasedEvent{
+				X:       c.MouseX(),
+				Y:       c.MouseY(),
+				Button:  c.MouseButton(),
+				Pressed: c.MouseIsPressed(),
+			}
+			handler(c, e)
 			return nil
 		})
 	}
 }
 
-// MouseClicked sets the mouseClicked handler for the canvas.
-func MouseClicked(handler func(c *Canvas)) Func {
+// MouseClicked sets the mouseClicked handler with a MouseClickedEvent
+func MouseClicked(handler MouseClickedHandler) Func {
 	return func(c *Canvas) {
 		c.funcHandlers["mouseClicked"] = js.FuncOf(func(value js.Value, args []js.Value) any {
-			handler(c)
+			e := MouseClickedEvent{
+				X:       c.MouseX(),
+				Y:       c.MouseY(),
+				Button:  c.MouseButton(),
+				Pressed: c.MouseIsPressed(),
+			}
+			handler(c, e)
 			return nil
 		})
 	}
 }
 
-// DoubleClicked sets the doubleClicked handler for the canvas.
-func DoubleClicked(handler func(c *Canvas)) Func {
+// DoubleClicked sets the doubleClicked handler with a DoubleClickedEvent
+func DoubleClicked(handler DoubleClickedHandler) Func {
 	return func(c *Canvas) {
 		c.funcHandlers["doubleClicked"] = js.FuncOf(func(value js.Value, args []js.Value) any {
-			handler(c)
+			e := DoubleClickedEvent{
+				X:       c.MouseX(),
+				Y:       c.MouseY(),
+				Button:  c.MouseButton(),
+				Pressed: c.MouseIsPressed(),
+			}
+			handler(c, e)
 			return nil
 		})
 	}
@@ -311,6 +400,18 @@ func KeyTyped(handler func(c *Canvas)) Func {
 type Canvas struct {
 	p5Instance   js.Value
 	funcHandlers map[string]js.Func
+	width        float64
+	height       float64
+	renderer     RendererMode
+}
+
+// NewCanvas creates a new canvas with the specified width, height and renderer.
+func NewCanvas(width, height float64, renderer RendererMode) *Canvas {
+	return &Canvas{
+		width:    width,
+		height:   height,
+		renderer: renderer,
+	}
 }
 
 // Validate checks if the p5.js instance and required handlers are set.
@@ -329,6 +430,8 @@ func (c *Canvas) Validate() error {
 
 // CreateCanvas creates a new canvas with the specified width and height.
 func (c *Canvas) CreateCanvas(w, h int, opts ...any) {
+	c.width = float64(w)
+	c.height = float64(h)
 	c.p5Instance.Call("createCanvas", append([]any{w, h}, opts...)...)
 }
 
@@ -498,9 +601,9 @@ func (c *Canvas) Map(value, start1, stop1, start2, stop2 float64) float64 {
 }
 
 // BeginShape begins recording vertices for a shape.
-func (c *Canvas) BeginShape(option ...any) {
-	if len(option) > 0 {
-		c.p5Instance.Call("beginShape", option[0])
+func (c *Canvas) BeginShape(kind ...ShapeType) {
+	if len(kind) > 0 {
+		c.p5Instance.Call("beginShape", js.Global().Get(string(kind[0])))
 	} else {
 		c.p5Instance.Call("beginShape")
 	}
@@ -512,9 +615,9 @@ func (c *Canvas) Vertex(x, y float64) {
 }
 
 // EndShape ends recording vertices for a shape.
-func (c *Canvas) EndShape(mode ...string) {
+func (c *Canvas) EndShape(mode ...ShapeType) {
 	if len(mode) > 0 {
-		c.p5Instance.Call("endShape", mode[0])
+		c.p5Instance.Call("endShape", js.Global().Get(string(mode[0])))
 	} else {
 		c.p5Instance.Call("endShape")
 	}
@@ -546,13 +649,13 @@ func (c *Canvas) Close() {
 }
 
 // TextAlign sets the alignment for text.
-func (c *Canvas) TextAlign(align string) {
-	c.p5Instance.Call("textAlign", align)
+func (c *Canvas) TextAlign(align DrawingMode) {
+	c.p5Instance.Call("textAlign", string(align))
 }
 
 // TextWrap sets the wrap mode for text.
-func (c *Canvas) TextWrap(w string) {
-	c.p5Instance.Call("textWrap", w)
+func (c *Canvas) TextWrap(w DrawingMode) {
+	c.p5Instance.Call("textWrap", string(w))
 }
 
 // MouseX returns the current x-coordinate of the mouse.
@@ -616,11 +719,11 @@ func (c *Canvas) KeyIsPressed() bool {
 }
 
 // ColorMode sets the color mode for the canvas.
-func (c *Canvas) ColorMode(mode string, max ...float64) {
+func (c *Canvas) ColorMode(mode ColorMode, max ...float64) {
 	if len(max) > 0 {
-		c.p5Instance.Call("colorMode", mode, max[0])
+		c.p5Instance.Call("colorMode", string(mode), max[0])
 	} else {
-		c.p5Instance.Call("colorMode", mode)
+		c.p5Instance.Call("colorMode", string(mode))
 	}
 }
 
@@ -635,8 +738,8 @@ func (c *Canvas) Cos(value float64) float64 {
 }
 
 // AngleMode sets the angle mode for the canvas.
-func (c *Canvas) AngleMode(mode string) {
-	c.p5Instance.Call("angleMode", mode)
+func (c *Canvas) AngleMode(mode AngleMode) {
+	c.p5Instance.Call("angleMode", string(mode))
 }
 
 // Asin returns the arcsine of a value.
@@ -680,8 +783,8 @@ func (c *Canvas) StrokeWeight(weight float64) {
 }
 
 // StrokeCap sets the style of the stroke cap.
-func (c *Canvas) StrokeCap(cap string) {
-	c.p5Instance.Call("strokeCap", cap)
+func (c *Canvas) StrokeCap(cap ShapeType) {
+	c.p5Instance.Call("strokeCap", string(cap))
 }
 
 // Erase enables the eraser tool.
@@ -810,8 +913,8 @@ func (c *Canvas) TextLeading(leading float64) {
 }
 
 // TextStyle sets the style for text.
-func (c *Canvas) TextStyle(style string) {
-	c.p5Instance.Call("textStyle", style)
+func (c *Canvas) TextStyle(style TextStyle) {
+	c.p5Instance.Call("textStyle", string(style))
 }
 
 // TextWidth returns the width of the specified text.
@@ -820,8 +923,8 @@ func (c *Canvas) TextWidth(text string) float64 {
 }
 
 // Cursor sets the cursor style.
-func (c *Canvas) Cursor(style string) {
-	c.p5Instance.Call("cursor", style)
+func (c *Canvas) Cursor(style CursorStyle) {
+	c.p5Instance.Call("cursor", string(style))
 }
 
 // NoCursor hides the cursor.
@@ -841,12 +944,12 @@ func (c *Canvas) WindowHeight() float64 {
 
 // Width returns the width of the canvas.
 func (c *Canvas) Width() float64 {
-	return c.p5Instance.Get("width").Float()
+	return c.width
 }
 
 // Height returns the height of the canvas.
 func (c *Canvas) Height() float64 {
-	return c.p5Instance.Get("height").Float()
+	return c.height
 }
 
 // ApplyMatrix applies a transformation matrix to the canvas.
@@ -953,8 +1056,8 @@ func (c *Canvas) CreateGraphics(w, h float64, renderer ...any) *Canvas {
 }
 
 // BlendMode sets the blending mode for the canvas.
-func (c *Canvas) BlendMode(mode string) {
-	c.p5Instance.Call("blendMode", mode)
+func (c *Canvas) BlendMode(mode BlendMode) {
+	c.p5Instance.Call("blendMode", string(mode))
 }
 
 // LoadPixels loads the pixel data for the canvas into the pixels[] array.
@@ -983,17 +1086,17 @@ func (c *Canvas) Copy(srcImage js.Value, sx, sy, sw, sh, dx, dy, dw, dh float64)
 }
 
 // Filter applies a filter to the canvas.
-func (c *Canvas) Filter(filterType string, value ...float64) {
+func (c *Canvas) Filter(filterType FilterType, value ...float64) {
 	if len(value) > 0 {
-		c.p5Instance.Call("filter", filterType, value[0])
+		c.p5Instance.Call("filter", string(filterType), value[0])
 	} else {
-		c.p5Instance.Call("filter", filterType)
+		c.p5Instance.Call("filter", string(filterType))
 	}
 }
 
 // Blend blends a region of pixels using a specified blend mode.
-func (c *Canvas) Blend(sx, sy, sw, sh, dx, dy, dw, dh float64, blendMode string) {
-	c.p5Instance.Call("blend", sx, sy, sw, sh, dx, dy, dw, dh, blendMode)
+func (c *Canvas) Blend(sx, sy, sw, sh, dx, dy, dw, dh float64, blendMode BlendMode) {
+	c.p5Instance.Call("blend", sx, sy, sw, sh, dx, dy, dw, dh, string(blendMode))
 }
 
 // Mask applies an image as a mask to the canvas.
@@ -1002,18 +1105,18 @@ func (c *Canvas) Mask(img js.Value) {
 }
 
 // EllipseMode sets the location from which ellipses are drawn.
-func (c *Canvas) EllipseMode(mode string) {
-	c.p5Instance.Call("ellipseMode", mode)
+func (c *Canvas) EllipseMode(mode DrawingMode) {
+	c.p5Instance.Call("ellipseMode", string(mode))
 }
 
 // RectMode sets the location from which rectangles are drawn.
-func (c *Canvas) RectMode(mode string) {
-	c.p5Instance.Call("rectMode", mode)
+func (c *Canvas) RectMode(mode DrawingMode) {
+	c.p5Instance.Call("rectMode", string(mode))
 }
 
 // StrokeJoin sets the style of the joints which connect line segments.
-func (c *Canvas) StrokeJoin(join string) {
-	c.p5Instance.Call("strokeJoin", join)
+func (c *Canvas) StrokeJoin(join ShapeType) {
+	c.p5Instance.Call("strokeJoin", string(join))
 }
 
 // Smooth draws all geometry with smooth (anti-aliased) edges.
@@ -1041,6 +1144,8 @@ func (c *Canvas) CreateCapture(kind CaptureKind) js.Value {
 
 // Size sets the size of the canvas.
 func (c *Canvas) Size(width, height float64) {
+	c.width = width
+	c.height = height
 	c.p5Instance.Call("size", width, height)
 }
 
@@ -1048,3 +1153,135 @@ func (c *Canvas) Size(width, height float64) {
 func (c *Canvas) Hide() {
 	c.p5Instance.Call("hide")
 }
+
+// Color represents a color with RGBA components
+type Color struct {
+	R, G, B, A float64
+}
+
+// Vector represents a 2D vector
+type Vector struct {
+	X, Y float64
+}
+
+// Rectangle represents a rectangle with position and size
+type Rectangle struct {
+	Position Vector
+	Size     Vector
+}
+
+// Circle represents a circle with center position and diameter
+type Circle struct {
+	Position Vector
+	Diameter float64
+}
+
+// Line represents a line with start and end points
+type Line struct {
+	Start, End Vector
+}
+
+// Triangle represents a triangle with three vertices
+type Triangle struct {
+	V1, V2, V3 Vector
+}
+
+// FillRGB sets the fill color using RGB values
+func (c *Canvas) FillRGB(r, g, b float64) {
+	c.Fill(r, g, b)
+}
+
+// FillRGBA sets the fill color using RGBA values
+func (c *Canvas) FillRGBA(r, g, b, a float64) {
+	c.Fill(r, g, b, a)
+}
+
+// FillColor sets the fill color using a Color struct
+func (c *Canvas) FillColor(color Color) {
+	c.Fill(color.R, color.G, color.B, color.A)
+}
+
+// StrokeRGB sets the stroke color using RGB values
+func (c *Canvas) StrokeRGB(r, g, b float64) {
+	c.Stroke(r, g, b)
+}
+
+// StrokeRGBA sets the stroke color using RGBA values
+func (c *Canvas) StrokeRGBA(r, g, b, a float64) {
+	c.Stroke(r, g, b, a)
+}
+
+// StrokeColor sets the stroke color using a Color struct
+func (c *Canvas) StrokeColor(color Color) {
+	c.Stroke(color.R, color.G, color.B, color.A)
+}
+
+// DrawRect draws a rectangle using a Rectangle struct
+func (c *Canvas) DrawRect(r Rectangle) {
+	c.Rect(r.Position.X, r.Position.Y, r.Size.X, r.Size.Y)
+}
+
+// DrawCircle draws a circle using a Circle struct
+func (c *Canvas) DrawCircle(circle Circle) {
+	c.Circle(circle.Position.X, circle.Position.Y, circle.Diameter)
+}
+
+// DrawLine draws a line using a Line struct
+func (c *Canvas) DrawLine(line Line) {
+	c.Line(line.Start.X, line.Start.Y, line.End.X, line.End.Y)
+}
+
+// DrawTriangle draws a triangle using a Triangle struct
+func (c *Canvas) DrawTriangle(t Triangle) {
+	c.Triangle(t.V1.X, t.V1.Y, t.V2.X, t.V2.Y, t.V3.X, t.V3.Y)
+}
+
+// MouseEvent represents a mouse event
+type MouseEvent struct {
+	X, Y    float64
+	Button  string
+	Pressed bool
+}
+
+// MousePressedHandler is a type for mouse pressed event handlers
+type MousePressedHandler func(c *Canvas, e MouseEvent)
+
+// MouseDraggedEvent represents a mouse dragged event
+type MouseDraggedEvent struct {
+	X, Y    float64
+	Button  string
+	Pressed bool
+}
+
+// MouseDraggedHandler is a type for mouse dragged event handlers
+type MouseDraggedHandler func(c *Canvas, e MouseDraggedEvent)
+
+// MouseReleasedEvent represents a mouse released event
+type MouseReleasedEvent struct {
+	X, Y    float64
+	Button  string
+	Pressed bool
+}
+
+// MouseReleasedHandler is a type for mouse released event handlers
+type MouseReleasedHandler func(c *Canvas, e MouseReleasedEvent)
+
+// MouseClickedEvent represents a mouse clicked event
+type MouseClickedEvent struct {
+	X, Y    float64
+	Button  string
+	Pressed bool
+}
+
+// MouseClickedHandler is a type for mouse clicked event handlers
+type MouseClickedHandler func(c *Canvas, e MouseClickedEvent)
+
+// DoubleClickedEvent represents a double clicked event
+type DoubleClickedEvent struct {
+	X, Y    float64
+	Button  string
+	Pressed bool
+}
+
+// DoubleClickedHandler is a type for double clicked event handlers
+type DoubleClickedHandler func(c *Canvas, e DoubleClickedEvent)
