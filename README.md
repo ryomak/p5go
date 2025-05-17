@@ -1,4 +1,7 @@
 # p5go
+
+[![Go Reference](https://pkg.go.dev/badge/github.com/ryomak/p5go.svg)](https://pkg.go.dev/github.com/ryomak/p5go)
+
 p5go provides a bridge between Go and p5.js.
 inspired by https://github.com/ongaeshi/p5rb
 
