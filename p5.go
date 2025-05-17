@@ -599,8 +599,12 @@ func (c *Canvas) BeginShape(kind ...ShapeType) {
 }
 
 // Vertex adds a vertex to the current shape.
-func (c *Canvas) Vertex(x, y float64) {
-	c.p5Instance.Call("vertex", x, y)
+func (c *Canvas) Vertex(x, y float64, z ...float64) {
+	if len(z) > 0 {
+		c.p5Instance.Call("vertex", x, y, z[0])
+	} else {
+		c.p5Instance.Call("vertex", x, y)
+	}
 }
 
 // EndShape ends recording vertices for a shape.
