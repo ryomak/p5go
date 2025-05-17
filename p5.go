@@ -476,8 +476,12 @@ func (c *Canvas) Triangle(x1, y1, x2, y2, x3, y3 float64) {
 }
 
 // Point draws a point on the canvas.
-func (c *Canvas) Point(x, y float64) {
-	c.p5Instance.Call("point", x, y)
+func (c *Canvas) Point(x, y float64, z ...float64) {
+	if len(z) > 0 {
+		c.p5Instance.Call("point", x, y, z[0])
+	} else {
+		c.p5Instance.Call("point", x, y)
+	}
 }
 
 // Arc draws an arc on the canvas.
