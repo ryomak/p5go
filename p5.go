@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"math"
 	"syscall/js"
+
+	"github.com/samber/lo"
 )
 
 // RendererMode represents the rendering mode for the canvas
@@ -87,15 +89,15 @@ const (
 	QUADS          ShapeType = "QUADS"
 	QUAD_STRIP     ShapeType = "QUAD_STRIP"
 	TESS           ShapeType = "TESS"
-	CLOSE          ShapeType = "close"
-	OPEN           ShapeType = "open"
-	CHORD          ShapeType = "chord"
-	PIE            ShapeType = "pie"
-	PROJECT        ShapeType = "square"
-	SQUARE         ShapeType = "butt"
-	ROUND          ShapeType = "round"
-	BEVEL          ShapeType = "bevel"
-	MITER          ShapeType = "miter"
+	CLOSE          ShapeType = "CLOSE"
+	OPEN           ShapeType = "OPEN"
+	CHORD          ShapeType = "CHORD"
+	PIE            ShapeType = "PIE"
+	PROJECT        ShapeType = "PROJECT"
+	SQUARE         ShapeType = "SQUARE"
+	ROUND          ShapeType = "ROUND"
+	BEVEL          ShapeType = "BEVEL"
+	MITER          ShapeType = "MITER"
 )
 
 // BlendMode represents the blending mode
@@ -402,16 +404,6 @@ type Canvas struct {
 	funcHandlers map[string]js.Func
 	width        float64
 	height       float64
-	renderer     RendererMode
-}
-
-// NewCanvas creates a new canvas with the specified width, height and renderer.
-func NewCanvas(width, height float64, renderer RendererMode) *Canvas {
-	return &Canvas{
-		width:    width,
-		height:   height,
-		renderer: renderer,
-	}
 }
 
 // Validate checks if the p5.js instance and required handlers are set.
@@ -429,10 +421,12 @@ func (c *Canvas) Validate() error {
 }
 
 // CreateCanvas creates a new canvas with the specified width and height.
-func (c *Canvas) CreateCanvas(w, h int, opts ...any) {
+func (c *Canvas) CreateCanvas(w, h int, opts ...RendererMode) {
 	c.width = float64(w)
 	c.height = float64(h)
-	c.p5Instance.Call("createCanvas", append([]any{w, h}, opts...)...)
+	c.p5Instance.Call("createCanvas", append([]any{w, h}, lo.Map(opts, func(opt RendererMode, _ int) any {
+		return string(opt)
+	})...)...)
 }
 
 // Background sets the background color of the canvas.
@@ -481,8 +475,12 @@ func (c *Canvas) Triangle(x1, y1, x2, y2, x3, y3 float64) {
 }
 
 // Point draws a point on the canvas.
-func (c *Canvas) Point(x, y float64) {
-	c.p5Instance.Call("point", x, y)
+func (c *Canvas) Point(x, y float64, z ...float64) {
+	if len(z) > 0 {
+		c.p5Instance.Call("point", x, y, z[0])
+	} else {
+		c.p5Instance.Call("point", x, y)
+	}
 }
 
 // Arc draws an arc on the canvas.
@@ -1234,6 +1232,11 @@ func (c *Canvas) DrawLine(line Line) {
 // DrawTriangle draws a triangle using a Triangle struct
 func (c *Canvas) DrawTriangle(t Triangle) {
 	c.Triangle(t.V1.X, t.V1.Y, t.V2.X, t.V2.Y, t.V3.X, t.V3.Y)
+}
+
+// OrbitControl represents a control for orbiting around an object
+func (c *Canvas) OrbitControl(opts ...any) {
+	c.p5Instance.Call("orbitControl", opts...)
 }
 
 // MouseEvent represents a mouse event
