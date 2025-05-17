@@ -1231,6 +1231,11 @@ func (c *Canvas) DrawTriangle(t Triangle) {
 	c.Triangle(t.V1.X, t.V1.Y, t.V2.X, t.V2.Y, t.V3.X, t.V3.Y)
 }
 
+// OrbitControl represents a control for orbiting around an object
+func (c *Canvas) OrbitControl(opts ...any) {
+	c.p5Instance.Call("orbitControl", opts...)
+}
+
 // MouseEvent represents a mouse event
 type MouseEvent struct {
 	X, Y    float64
