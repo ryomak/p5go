@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"math"
 	"syscall/js"
+
+	"github.com/samber/lo"
 )
 
 // RendererMode represents the rendering mode for the canvas
@@ -405,15 +407,6 @@ type Canvas struct {
 	renderer     RendererMode
 }
 
-// NewCanvas creates a new canvas with the specified width, height and renderer.
-func NewCanvas(width, height float64, renderer RendererMode) *Canvas {
-	return &Canvas{
-		width:    width,
-		height:   height,
-		renderer: renderer,
-	}
-}
-
 // Validate checks if the p5.js instance and required handlers are set.
 func (c *Canvas) Validate() error {
 	if c.p5Instance.Type() == js.TypeUndefined {
@@ -429,10 +422,12 @@ func (c *Canvas) Validate() error {
 }
 
 // CreateCanvas creates a new canvas with the specified width and height.
-func (c *Canvas) CreateCanvas(w, h int, opts ...any) {
+func (c *Canvas) CreateCanvas(w, h int, opts ...RendererMode) {
 	c.width = float64(w)
 	c.height = float64(h)
-	c.p5Instance.Call("createCanvas", append([]any{w, h}, opts...)...)
+	c.p5Instance.Call("createCanvas", append([]any{w, h}, lo.Map(opts, func(opt RendererMode, _ int) any {
+		return opt
+	})...)...)
 }
 
 // Background sets the background color of the canvas.
