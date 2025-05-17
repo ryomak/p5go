@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"math"
 	"syscall/js"
-
-	"github.com/samber/lo"
 )
 
 // RendererMode represents the rendering mode for the canvas
@@ -169,15 +167,6 @@ const (
 	// Device orientation
 	LANDSCAPE Orientation = "landscape"
 	PORTRAIT  Orientation = "portrait"
-)
-
-// CanvasRenderer represents the canvas renderer
-type CanvasRenderer string
-
-const (
-	// Canvas renderer
-	CanvasRendererWEBGL CanvasRenderer = "WEBGL"
-	CanvasRendererP2D   CanvasRenderer = "P2D"
 )
 
 var (
@@ -421,16 +410,10 @@ func (c *Canvas) Validate() error {
 }
 
 // CreateCanvas creates a new canvas with the specified width and height.
-func (c *Canvas) CreateCanvas(w, h int, opts ...RendererMode) {
+func (c *Canvas) CreateCanvas(w, h int, opts ...any) {
 	c.width = float64(w)
 	c.height = float64(h)
-	if len(opts) > 0 {
-		c.p5Instance.Call("createCanvas", append([]any{w, h}, lo.Map(opts, func(opt RendererMode, _ int) any {
-			return string(opt)
-		})...)...)
-	} else {
-		c.p5Instance.Call("createCanvas", w, h)
-	}
+	c.p5Instance.Call("createCanvas", w, h)
 }
 
 // Background sets the background color of the canvas.
