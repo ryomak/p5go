@@ -404,7 +404,6 @@ type Canvas struct {
 	funcHandlers map[string]js.Func
 	width        float64
 	height       float64
-	renderer     RendererMode
 }
 
 // Validate checks if the p5.js instance and required handlers are set.
@@ -426,7 +425,7 @@ func (c *Canvas) CreateCanvas(w, h int, opts ...RendererMode) {
 	c.width = float64(w)
 	c.height = float64(h)
 	c.p5Instance.Call("createCanvas", append([]any{w, h}, lo.Map(opts, func(opt RendererMode, _ int) any {
-		return opt
+		return string(opt)
 	})...)...)
 }
 
