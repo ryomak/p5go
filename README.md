@@ -50,10 +50,15 @@ See the [examples directory](example/) for more:
 
 - [Simple](example/simple/) - Basic shapes and drawing
 - [Playground](example/playground/) - Interactive animation with mouse events
+- [Solar System](example/solar_system/) - 3D spheres with `PointLight` + `SpecularMaterial`
+- [Wireframe Sphere](example/wireframe_sphere/) - Stroke-only `Sphere` and `Torus` in WEBGL
 
 ## Features
 
 - Drawing: shapes, text, images, custom paths
+- 3D primitives in WEBGL mode: `Box`, `Sphere`, `Ellipsoid`, `Cylinder`, `Cone`, `Plane`, `Torus`
+- Lighting & materials: `AmbientLight`, `DirectionalLight`, `PointLight`, `SpotLight`, `AmbientMaterial`, `SpecularMaterial`, `EmissiveMaterial`, `NormalMaterial`, `Shininess`
+- Camera control: `Camera`, `Perspective`, `Ortho`, `OrbitControl`
 - Styling: colors, strokes, fills, transformations
 - Events: mouse and keyboard input
 - Export: save as image or animated GIF
@@ -92,6 +97,18 @@ p5go.KeyPressed(handler)
 // Export
 c.SaveCanvas(filename, ext)
 c.SaveGif(filename, seconds)
+
+// 3D (requires WEBGL renderer: c.CreateCanvas(w, h, p5go.WEBGL))
+c.Sphere(50)
+c.Cylinder(40, 100)
+c.Cone(40, 80)
+c.Torus(120, 20)
+c.Plane(200, 200)
+
+c.AmbientLight(40)
+c.PointLight(255, 240, 200, 0, 0, 0)
+c.SpecularMaterial(220, 120, 80)
+c.Shininess(40)
 ```
 
 ## Contributing

@@ -233,11 +233,72 @@ func (c *Canvas) DrawTriangle(t Triangle) {
 	c.Triangle(t.V1.X, t.V1.Y, t.V2.X, t.V2.Y, t.V3.X, t.V3.Y)
 }
 
-// Box represents a 3D box with position and size
+// Box draws a 3D box. width / height / depth are optional (defaults to 50).
+// Requires WEBGL renderer.
 func (c *Canvas) Box(opts ...any) {
 	if len(opts) > 0 {
 		c.p5Instance.Call("box", opts...)
 	} else {
 		c.p5Instance.Call("box")
+	}
+}
+
+// Sphere draws a 3D sphere. radius is optional (default 50).
+// detailX and detailY control segment count. Requires WEBGL renderer.
+func (c *Canvas) Sphere(opts ...any) {
+	if len(opts) > 0 {
+		c.p5Instance.Call("sphere", opts...)
+	} else {
+		c.p5Instance.Call("sphere")
+	}
+}
+
+// Ellipsoid draws a 3D ellipsoid with the given radii along x/y/z.
+// detailX and detailY are optional. Requires WEBGL renderer.
+func (c *Canvas) Ellipsoid(opts ...any) {
+	if len(opts) > 0 {
+		c.p5Instance.Call("ellipsoid", opts...)
+	} else {
+		c.p5Instance.Call("ellipsoid")
+	}
+}
+
+// Cylinder draws a 3D cylinder. radius / height / detailX / detailY / bottomCap / topCap are optional.
+// Requires WEBGL renderer.
+func (c *Canvas) Cylinder(opts ...any) {
+	if len(opts) > 0 {
+		c.p5Instance.Call("cylinder", opts...)
+	} else {
+		c.p5Instance.Call("cylinder")
+	}
+}
+
+// Cone draws a 3D cone. radius / height / detailX / detailY / cap are optional.
+// Requires WEBGL renderer.
+func (c *Canvas) Cone(opts ...any) {
+	if len(opts) > 0 {
+		c.p5Instance.Call("cone", opts...)
+	} else {
+		c.p5Instance.Call("cone")
+	}
+}
+
+// Plane draws a 3D plane on the XY axes. width / height / detailX / detailY are optional.
+// Requires WEBGL renderer.
+func (c *Canvas) Plane(opts ...any) {
+	if len(opts) > 0 {
+		c.p5Instance.Call("plane", opts...)
+	} else {
+		c.p5Instance.Call("plane")
+	}
+}
+
+// Torus draws a 3D torus. radius / tubeRadius / detailX / detailY are optional.
+// Requires WEBGL renderer.
+func (c *Canvas) Torus(opts ...any) {
+	if len(opts) > 0 {
+		c.p5Instance.Call("torus", opts...)
+	} else {
+		c.p5Instance.Call("torus")
 	}
 }
